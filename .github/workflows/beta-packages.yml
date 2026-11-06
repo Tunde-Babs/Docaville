@@ -3,7 +3,19 @@ on:
   workflow_dispatch:
   push:
     branches: ['release/docaville-1.1.0-preparation']
-    paths-ignore: ['docs/**', 'licenses/**', 'README.md']
+    paths:
+      - '.github/workflows/beta-packages.yml'
+      - 'src/**'
+      - 'electron/**'
+      - 'public/**'
+      - 'assets/**'
+      - 'build/**'
+      - 'package*.json'
+      - 'vite.config.ts'
+      - 'index.html'
+      - 'scripts/**'
+      - 'licenses/**'
+      - 'docs/release/model-licenses.md'
 permissions:
   contents: read
 concurrency:
@@ -36,7 +48,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run notices
-      - run: npx electron-builder ${{ matrix.args }}
+      - run: npx electron-builder --publish never ${{ matrix.args }}
       - run: node scripts/release-checksums.mjs
       - uses: actions/upload-artifact@v4
         with:

@@ -3,6 +3,7 @@
   "name": "docaville",
   "productName": "Docaville",
   "appId": "com.docaville.app",
+  "minimumMacOS": "13.0",
   "matchedFiles": 78,
   "asarSha256": "42317bb33d4a57045b14bd6ff925fae317aeb8682f8ec47f617129ceab123812",
   "signature": "ad-hoc; codesign verification passed; not notarized"

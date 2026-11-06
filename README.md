@@ -13,8 +13,8 @@ One TypeScript/React codebase that opens, edits, converts and exports **PDF, Wor
 | Platform | Shell | Command |
 |---|---|---|
 | Windows, macOS | Electron | `npm run desktop:dev` · `npm run desktop:build` |
-| iPhone / iPad | Capacitor (WKWebView) | `npx cap add ios` (once) → `npm run ios` |
-| Android | Capacitor (WebView) | `npx cap add android` (once) → `npm run android` |
+| iPhone / iPad (iOS/iPadOS 16.4+) | Capacitor (WKWebView) | `npm run ios` (sync/open the tracked native project) |
+| Android | Capacitor (WebView) | `npm run android` (sync/open the tracked native project) |
 | Browser | Vite | `npm run dev` |
 
 ## Getting started
@@ -144,7 +144,7 @@ npm run dist:mac      # → release/Docaville-1.1.0-mac-{arm64,x64}.{dmg,zip}
 One source drawing ([scripts/icon.mjs](scripts/icon.mjs)) generates every platform asset. After editing the design, run `npm run icons`:
 - `build/icon.icns` (macOS, Apple icon grid), `build/icon.ico` (Windows, 16–256 px) and `build/icon.png`, used by electron-builder and the dev Dock icon.
 - `public/favicon.svg`, `logo.svg`, `apple-touch-icon.png` (web and in-app).
-- `assets/icon-only.png`, `icon-foreground.png` + `icon-background.png` (Android adaptive icon), `splash.png` and `splash-dark.png`. After `npx cap add ios|android`, run `npm run mobile:assets` to generate the native icon sets.
+- `assets/icon-only.png`, `icon-foreground.png` + `icon-background.png` (Android adaptive icon), `splash.png` and `splash-dark.png`. Run `npm run mobile:assets` to regenerate the native icon sets in the tracked projects.
 
 ## Known gaps / roadmap
 

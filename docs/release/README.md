@@ -13,11 +13,13 @@ This folder tracks the release candidate. A successful build is not device accep
 | Configure native iOS and Android projects, permissions, icons, and build numbers | Android APK/AAB compiled; iOS source configured, Xcode environment blocked (verification.md) |
 | Clean-machine/device acceptance and accessibility/performance checks | Pending real-device testing |
 | Developer ID, notarization, Windows signing, store accounts | Requires owner credentials/accounts |
-| Paid product model, pricing, store billing and purchase restoration if applicable | Owner decision pending; beta has no payment gate |
+| Paid product model, pricing, store billing and purchase restoration if applicable | Free app with paid feature unlock selected; split, price, and store setup pending; beta has no payment gate |
 | TestFlight / Play closed testing / desktop beta feedback | Pending accounts and candidate acceptance |
 | Public store submission and staged commercial release | Pending preceding steps |
 
 ## Identity and existing data
+
+Minimum iOS/iPadOS deployment target: **16.4**, matching Safari/WebKit WebAssembly SIMD support required by the local inference runtime. This is a technical minimum, not physical-device acceptance. See [Apple Safari 16.4 release notes](https://developer.apple.com/documentation/safari-release-notes/safari-16_4-release-notes).
 
 New bundle/application ID: `com.docaville.app`. Confirm availability when creating store records before the first submission; package IDs should then remain stable. Visible product name: Docaville. Version: 1.1.0; native build number: 11001.
 
