@@ -1,6 +1,6 @@
 // Runs after `npm run dist:*`. electron-builder leaves an unpacked copy of the app next to the installers
 // (release/mac, release/mac-arm64, win-unpacked…). On macOS, Spotlight and Launchpad index those copies,
-// so "DocumentHub" would show up several times. The installers (.dmg / .zip / .exe) are kept; the
+// so "Docaville" would show up several times. The installers (.dmg / .zip / .exe) are kept; the
 // unpacked copies are recreated by the next build.
 import { readdirSync, rmSync, statSync } from 'node:fs';
 import { join } from 'node:path';

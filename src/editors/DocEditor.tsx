@@ -5,12 +5,12 @@ import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Image from '@tiptap/extension-image';
-import Table from '@tiptap/extension-table';
+import { Table } from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import Highlight from '@tiptap/extension-highlight';
-import TextStyle from '@tiptap/extension-text-style';
+import { TextStyle } from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
 import Link from '@tiptap/extension-link';
 import { Node as EditorNode } from '@tiptap/core';
@@ -116,7 +116,7 @@ interface Loaded { html: string; defaults?: DocDefaults; header?: string; footer
 
 
 export const documentExtensions = [
-  StarterKit, Underline, TextStyle, Color, FontFamily, FontSize, ParagraphFormat, SectionBreak, Bookmark, Highlight.configure({ multicolor: true }),
+  StarterKit.configure({ link: false, underline: false }), Underline, TextStyle, Color, FontFamily, FontSize, ParagraphFormat, SectionBreak, Bookmark, Highlight.configure({ multicolor: true }),
   Link.configure({ openOnClick: false, autolink: false }),
   TextAlign.configure({ types: ['heading', 'paragraph'] }),
   SizedImage.configure({ allowBase64: true }),
@@ -157,7 +157,7 @@ export default function DocEditor({ file, onChange, onFail }: EditorProps) {
     if (!editor) return;
     loadOrFail('Opening document…', async () => {
       const res = await loadContent(file);
-      editor.commands.setContent(res.html, false); // false = loading is not an edit
+      editor.commands.setContent(res.html, { emitUpdate: false }); // false = loading is not an edit
       if (file.bytes && /\.docx$/i.test(file.name)) original.current = { bytes: file.bytes, defaults: res.defaults };
       setLoaded(res);
     }, onFail);

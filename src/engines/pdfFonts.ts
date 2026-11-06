@@ -27,7 +27,7 @@ export async function fallbackFonts(doc: PDFDocument, text: string): Promise<PDF
     if (!font) {
       let data = bytes.get(url);
       if (!data) {
-        data = fetch(url).then(async response => { if (!response.ok) throw new Error('A bundled PDF font could not be loaded. Try reopening DocumentHub.'); return new Uint8Array(await response.arrayBuffer()); });
+        data = fetch(url).then(async response => { if (!response.ok) throw new Error('A bundled PDF font could not be loaded. Try reopening Docaville.'); return new Uint8Array(await response.arrayBuffer()); });
         bytes.set(url, data); data.catch(() => bytes.delete(url));
       }
       font = data.then(b => doc.embedFont(b, { subset: true }));

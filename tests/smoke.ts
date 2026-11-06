@@ -292,7 +292,7 @@ function textCanvas(lines: string[], bg = '#cfe0fb') {
     assert(imp.header.includes('CONFIDENTIAL') && imp.footer.includes('Footer'), 'header/footer');
     // round-trip through the real editor schema
     const { Editor } = await import('@tiptap/core');
-    const StarterKit = (await import('@tiptap/starter-kit')).default, TextStyle = (await import('@tiptap/extension-text-style')).default;
+    const StarterKit = (await import('@tiptap/starter-kit')).default, TextStyle = (await import('@tiptap/extension-text-style')).TextStyle;
     const Color = (await import('@tiptap/extension-color')).default, FontFamily = (await import('@tiptap/extension-font-family')).default;
     const { Extension } = await import('@tiptap/core');
     const FontSize = Extension.create({ name: 'fs', addGlobalAttributes: () => [{ types: ['textStyle'], attributes: { fontSize: { default: null, parseHTML: (el: HTMLElement) => el.style.fontSize || null } } }] });

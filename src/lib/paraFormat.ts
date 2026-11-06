@@ -1,5 +1,5 @@
 // Paragraph spacing & page geometry shared by the Word editor, the .docx importer/writer and PDF export,
-// so a document looks the same in DocumentHub, in Microsoft Word and in the exported PDF.
+// so a document looks the same in Docaville, in Microsoft Word and in the exported PDF.
 //
 // Paragraph attributes (all optional; missing = the defaults below):
 //   spaceBefore / spaceAfter  points

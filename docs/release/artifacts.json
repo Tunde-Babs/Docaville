@@ -1,0 +1,17 @@
+[
+  {
+    "file": "Docaville-1.1.0-android-unsigned.aab",
+    "sha256": "9bca5a4bf33f4ee92204f4114884fb384f7976b538b364309cde3de252dd808b",
+    "bytes": 39541218
+  },
+  {
+    "file": "Docaville-1.1.0-beta-android-debug.apk",
+    "sha256": "dfa67163a36900e19899eb810f35a1083a7ca451ab210d9b14423460afdd2e9f",
+    "bytes": 46792345
+  },
+  {
+    "file": "Docaville-1.1.0-beta-mac-arm64.zip",
+    "sha256": "b5c5ea061a0978f94ee6588f0e4401293c39154c8769690748b09e608109beac",
+    "bytes": 153130865
+  }
+]

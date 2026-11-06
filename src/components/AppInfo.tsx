@@ -1,0 +1,15 @@
+import { version } from '../../package.json';
+
+export default function AppInfo() {
+  return <details className="panel"><summary>About Docaville · Privacy and support</summary>
+    <h2>Docaville {version}</h2><p>Create, edit, and understand your documents on your device.</p>
+    <h3>Privacy</h3><p>Your documents, recordings, transcripts, reviews, templates, and recovery history are processed locally. Docaville has no account system, advertising, analytics, or document-upload service.</p>
+    <p>Speech, translation, and document-answer models download from Hugging Face when first needed. OCR language packs download from the configured language provider. Those providers receive network requests, including your IP address. Document and audio contents are not included in these download requests. Once the required resources are cached, supported tools can run offline.</p>
+    <p>Microphone access is used when you record or dictate. Camera access is used when you choose photo capture on supported devices. Recordings persist across sessions only when you enable retention or choose Save All while recording. Drafts, saved versions, templates, and preferences use local application storage.</p>
+    <p>You can remove retained audio in Audio Studio and remove recovery versions in Recovery and versions. Clearing application/browser data removes local settings and history; back up exported documents first. Uninstall behavior depends on the device and does not guarantee all local data is removed.</p>
+    <p>Recognition, translation, OCR, and source answers can be inaccurate. Review output before relying on it. Some models and language packs require a substantial first download.</p>
+    <h3>Support and notices</h3><p><a href="https://github.com/Tunde-Babs/Docaville/issues" target="_blank" rel="noopener noreferrer">Report an issue or request help</a>. Include your platform, app version, and steps to reproduce. Use synthetic or redacted examples when reporting document problems.</p>
+    <p>Third-party notices are included with desktop packages. This build is a release candidate undergoing device acceptance testing.</p>
+    <p>Speech uses <a href="https://huggingface.co/Xenova/whisper-tiny" target="_blank" rel="noopener noreferrer">Whisper tiny converted by Xenova</a>. Source answers use <a href="https://huggingface.co/Xenova/distilbert-base-cased-distilled-squad" target="_blank" rel="noopener noreferrer">DistilBERT converted by Xenova</a>. Translation uses Xenova's ONNX conversions of <a href="https://huggingface.co/Helsinki-NLP" target="_blank" rel="noopener noreferrer">Helsinki-NLP OPUS-MT models</a>. The English–German source model is credited under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>; conversion and quantization adapt the original weights. Other model terms and library notices are recorded with the release documentation.</p>
+  </details>;
+}

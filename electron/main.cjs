@@ -3,7 +3,14 @@ const { app, BrowserWindow, dialog, ipcMain, Menu, shell } = require('electron')
 const path = require('node:path');
 const fs = require('node:fs/promises');
 const speech = require('./speech.cjs');
-if (process.env.DH_TEST && process.env.DH_TEST_PROFILE) app.setPath('userData', path.resolve(process.env.DH_TEST_PROFILE));
+const { profilePath } = require('./identity.cjs');
+const profile = process.env.DH_TEST && process.env.DH_TEST_PROFILE
+  ? path.resolve(process.env.DH_TEST_PROFILE) : profilePath(app.getPath('appData'));
+require('node:fs').mkdirSync(profile, { recursive: true });
+app.setPath('userData', profile);
+app.setPath('sessionData', profile);
+app.setName('Docaville');
+if (process.platform === 'win32') app.setAppUserModelId('com.docaville.app');
 
 const ICON = path.join(__dirname, '..', 'build', 'icon.png');
 const DOC_EXT = ['pdf', 'docx', 'doc', 'odt', 'rtf', 'txt', 'md', 'html', 'htm', 'xlsx', 'xlsm', 'csv', 'tsv', 'pptx',
@@ -13,6 +20,28 @@ let win = null;
 let dirtyCount = 0, forceClose = false, quitting = false;
 const pendingPaths = []; // files the OS asked us to open before the window was ready
 const writable = new Set(); // paths the renderer may overwrite: opened by the user or chosen in a Save dialog
+const entry = require('node:url').pathToFileURL(path.join(__dirname, '..', 'dist', 'index.html')).href;
+function trustedURL(value) {
+  try {
+    const url = new URL(value);
+    return process.env.ELECTRON_DEV_URL
+      ? url.origin === new URL(process.env.ELECTRON_DEV_URL).origin
+      : url.href.split('#')[0] === entry;
+  } catch { return false; }
+}
+function trustedSender(event) {
+  return win && event.sender === win.webContents && event.senderFrame === win.webContents.mainFrame && trustedURL(event.senderFrame.url);
+}
+const handle = (channel, handler) => ipcMain.handle(channel, (event, ...args) => {
+  if (!trustedSender(event)) throw new Error('Untrusted application request.');
+  return handler(event, ...args);
+});
+const listen = (channel, handler) => ipcMain.on(channel, (event, ...args) => {
+  if (trustedSender(event)) handler(event, ...args);
+});
+function externalLink(value) {
+  try { if (['https:', 'http:'].includes(new URL(value).protocol)) void shell.openExternal(value); } catch { /* invalid links are ignored */ }
+}
 
 // ---------- single instance + "Open with…" / double-click in Finder / Explorer ----------
 // (automated tests set DH_TEST so they can run beside a developer's copy of the app)
@@ -49,7 +78,7 @@ function createWindow() {
     width: 1400,
     height: 900,
     minWidth: 380,
-    title: 'DocumentHub',
+    title: 'Docaville',
     icon: ICON, // Windows/Linux taskbar & window icon (macOS uses the bundle's .icns)
     backgroundColor: '#EEF0FB',
     webPreferences: {
@@ -59,13 +88,20 @@ function createWindow() {
       sandbox: true,
     },
   });
+  const session = win.webContents.session;
+  session.setPermissionRequestHandler((contents, permission, callback, details) => {
+    callback(contents === win?.webContents && trustedURL(details.requestingUrl || contents.getURL())
+      && permission === 'media' && details.mediaTypes?.length > 0 && details.mediaTypes.every(type => type === 'audio'));
+  });
+  session.setPermissionCheckHandler((contents, permission, _origin, details) =>
+    contents === win?.webContents && trustedURL(contents.getURL()) && permission === 'media' && details.mediaType === 'audio');
   if (process.env.DH_TEST && process.env.DH_TEST_OFFLINE) win.webContents.session.webRequest.onBeforeRequest({ urls: ['https://*/*', 'http://*/*'] }, (_request, callback) => callback({ cancel: true }));
   if (process.env.ELECTRON_DEV_URL) win.loadURL(process.env.ELECTRON_DEV_URL);
   else win.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
 
   // Never navigate the app window away; open web links in the user's browser.
-  win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('file:') && !url.startsWith(process.env.ELECTRON_DEV_URL ?? '\0')) { e.preventDefault(); shell.openExternal(url); } });
-  win.webContents.setWindowOpenHandler(({ url }) => { if (/^https?:/.test(url)) shell.openExternal(url); return { action: 'deny' }; });
+  win.webContents.on('will-navigate', (e, url) => { if (!trustedURL(url)) { e.preventDefault(); externalLink(url); } });
+  win.webContents.setWindowOpenHandler(({ url }) => { externalLink(url); return { action: 'deny' }; });
 
   // Unsaved work: ask before closing the window / quitting.
   win.on('close', async (e) => {
@@ -88,26 +124,26 @@ function createWindow() {
 }
 
 // ---------- IPC ----------
-ipcMain.handle('speech-voices', () => speech.voices());
-ipcMain.handle('speech-speak', (_event, { text, voice, rate }) => speech.speak(text, voice, rate));
-ipcMain.handle('speech-control', (_event, action) => speech.control(action));
-ipcMain.on('allow-path', (_e, p) => { if (typeof p === 'string' && path.isAbsolute(p)) writable.add(path.resolve(p)); });
-ipcMain.handle('take-pending-files', async () => readForRenderer(pendingPaths.splice(0)));
-ipcMain.handle('open-dialog', async () => {
+handle('speech-voices', () => speech.voices());
+handle('speech-speak', (_event, { text, voice, rate }) => speech.speak(text, voice, rate));
+handle('speech-control', (_event, action) => speech.control(action));
+listen('allow-path', (_e, p) => { if (typeof p === 'string' && path.isAbsolute(p)) writable.add(path.resolve(p)); });
+handle('take-pending-files', async () => readForRenderer(pendingPaths.splice(0)));
+handle('open-dialog', async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog(win, {
     properties: ['openFile', 'multiSelections'],
     filters: [{ name: 'Documents & images', extensions: DOC_EXT }, { name: 'All files', extensions: ['*'] }],
   });
   return canceled ? [] : readForRenderer(filePaths);
 });
-ipcMain.handle('confirm-close', async (_e, { name }) => {
+handle('confirm-close', async (_e, { name }) => {
   const { response } = await dialog.showMessageBox(win, {
     type: 'warning', buttons: ['Save', "Don't Save", 'Cancel'], defaultId: 0, cancelId: 2,
     message: `Do you want to save the changes you made to “${name}”?`, detail: "Your changes will be lost if you don't save them.",
   });
   return ['save', 'discard', 'cancel'][response];
 });
-ipcMain.on('set-dirty', (_e, { count, title }) => {
+listen('set-dirty', (_e, { count, title }) => {
   dirtyCount = count;
   if (!win) return;
   win.setDocumentEdited?.(count > 0); // macOS: dot in the close button
@@ -120,13 +156,13 @@ async function atomicWrite(target, bytes) {
   await fs.writeFile(tmp, Buffer.from(bytes));
   await fs.rename(tmp, target);
 }
-ipcMain.handle('write-file', async (_e, { path: p, bytes }) => {
+handle('write-file', async (_e, { path: p, bytes }) => {
   const target = path.resolve(p);
-  if (!writable.has(target)) throw new Error('This file was not opened in DocumentHub; use Save As.');
+  if (!writable.has(target)) throw new Error('This file was not opened in Docaville; use Save As.');
   await atomicWrite(target, bytes);
   return target;
 });
-ipcMain.handle('save-file', async (event, { name, bytes }) => {
+handle('save-file', async (event, { name, bytes }) => {
   const w = BrowserWindow.fromWebContents(event.sender);
   const ext = path.extname(name).slice(1);
   const { canceled, filePath } = await dialog.showSaveDialog(w, {
@@ -139,7 +175,7 @@ ipcMain.handle('save-file', async (event, { name, bytes }) => {
   app.addRecentDocument(filePath);
   return filePath;
 });
-ipcMain.handle('print-to-pdf', async (event, { landscape }) => event.sender.printToPDF({
+handle('print-to-pdf', async (event, { landscape }) => event.sender.printToPDF({
   printBackground: true, landscape: !!landscape, pageSize: 'A4', margins: { marginType: 'default' },
 }));
 

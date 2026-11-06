@@ -29,10 +29,7 @@ __pycache__/
 /tests/fixtures/Scan-table.xlsx
 /tests/fixtures/DocumentHub-batch.zip
 
-# Capacitor platform projects are currently generated with `npx cap add`.
-# Revisit these rules before committing native customizations.
-/ios/
-/android/
+# Track native project configuration; platform .gitignore files exclude build products.
 
 # Local environment, credentials, and signing material
 .env

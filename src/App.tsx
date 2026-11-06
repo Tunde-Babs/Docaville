@@ -104,7 +104,7 @@ export default function App() {
   // Window title + unsaved count for the desktop shell (macOS close-button dot, quit prompt).
   useEffect(() => {
     const cur = files.find((f) => f.id === active);
-    const title = cur ? `${cur.dirty ? '• ' : ''}${cur.name} — DocumentHub` : 'DocumentHub';
+    const title = cur ? `${cur.dirty ? '• ' : ''}${cur.name} — Docaville` : 'Docaville';
     document.title = title;
     window.docHubNative?.setDirty(files.filter((f) => f.dirty).length + extraDirty.length, title);
   }, [files, active, extraDirty]);
@@ -176,7 +176,7 @@ export default function App() {
   return (
     <div className="app">
       <nav className="tabs">
-        <button className={'tab home' + (active === 'home' ? ' on' : '')} onClick={() => setActive('home')}><img src="./logo.svg" alt="" width={20} height={20} /> DocumentHub</button>
+        <button className={'tab home' + (active === 'home' ? ' on' : '')} onClick={() => setActive('home')}><img src="./logo.svg" alt="" width={20} height={20} /> Docaville</button>
         <button className={'tab' + (active === 'tools' ? ' on' : '')} onClick={() => openTool(tool)}>Productivity tools</button>
         {files.map((f) => (
           <div key={f.id} className={`tab kind-${f.kind}` + (active === f.id ? ' on' : '') + (f.dirty ? ' dirty' : '')} onClick={() => setActive(f.id)} title={f.path ?? f.name}>

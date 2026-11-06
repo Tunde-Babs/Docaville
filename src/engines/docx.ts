@@ -181,7 +181,7 @@ export interface DocDefaults extends DocSection { font: string; sizePt: number; 
 export async function buildDocx(children: (Paragraph | Table)[], title = 'Document', background: string | null = null, defaults: DocDefaults = { font: 'Calibri', sizePt: 11 }): Promise<Uint8Array> {
   const styles = { default: { document: { run: { font: defaults.font, size: Math.round(defaults.sizePt * 2) } } } };
   const doc = new Document({
-    title, creator: 'DocumentHub', styles, numbering, sections: [{ children }],
+    title, creator: 'Docaville', styles, numbering, sections: [{ children }],
     ...(background ? { background: { color: background } } : {}),
   });
   return new Uint8Array(await (await Packer.toBlob(doc)).arrayBuffer());

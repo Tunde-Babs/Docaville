@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Docaville</string>
+    <string name="title_activity_main">Docaville</string>
+    <string name="package_name">com.docaville.app</string>
+    <string name="custom_url_scheme">com.docaville.app</string>
+</resources>

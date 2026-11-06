@@ -203,7 +203,7 @@ export default function SheetEditor({ file, onChange, onFail }: EditorProps) {
         <Btn onClick={() => edit((w) => spliceWorksheet(w, 'column', cur.c, 0, 1))}>+ Col</Btn>
         <Btn onClick={() => edit((w) => spliceWorksheet(w, 'column', cur.c, 1))}>− Col</Btn>
       </Toolbar>
-      {workbookExtension(wb) === 'xlsm' && <div className="export-notice">Macros are preserved when saving as .xlsm. DocumentHub does not run macros.</div>}
+      {workbookExtension(wb) === 'xlsm' && <div className="export-notice">Macros are preserved when saving as .xlsm. Docaville does not run macros.</div>}
 
       <div className="formula-bar">
         <span className="addr">{addr}</span>

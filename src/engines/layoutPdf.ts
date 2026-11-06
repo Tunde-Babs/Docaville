@@ -216,7 +216,7 @@ class Writer {
 
 export async function richTextToPdf(json: JSONContent, title = 'Document', defaults?: DocDefaults): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
-  doc.setTitle(title); doc.setCreator('DocumentHub');
+  doc.setTitle(title); doc.setCreator('Docaville');
   const content = JSON.stringify(json) + JSON.stringify(defaults ?? {});
   const w = new Writer(doc, await loadFonts(doc, content), defaults?.sizePt ?? 11, defaults?.font, defaults?.page ?? DEFAULT_PAGE, defaults);
   for (const n of json.content ?? []) await w.block(n);

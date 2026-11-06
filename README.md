@@ -2,7 +2,7 @@
 
 Create, edit, convert, and review PDFs, Word documents, spreadsheets, presentations, and images. Turn speech and scans into editable documents with on-device transcription, dictation, OCR, and translation.
 
-**Current build: 1.1.0.** Docaville is the new repository/product name. The application interface, package metadata, bundle identifiers, and generated installers still use **DocumentHub** pending the application rename. Commands and artifact names below reflect the current source.
+**Release candidate: 1.1.0.** Application branding, package metadata, and new application identifiers now use Docaville. Existing desktop recovery data uses the legacy profile when present; internal storage keys remain compatible. This is a beta preparation build, pending the acceptance and signing checks in [the release checklist](docs/release/README.md).
 
 No account or hosted document-processing backend is required. Cloud connections and team workspaces are deferred to a later build.
 
@@ -34,6 +34,7 @@ For browser development, use `npm run dev`. For a production build, use `npm run
 
 ```bash
 npm run typecheck
+npm run test:release
 npm test
 npm run test:regressions
 npm run test:productivity
@@ -130,13 +131,13 @@ Speaker labels are manual. Review operates on extracted text and does not round-
 ## Mac distribution
 
 ```bash
-npm run dist:mac      # → release/DocumentHub-1.1.0-mac-{arm64,x64}.{dmg,zip}
+npm run dist:mac      # → release/Docaville-1.1.0-mac-{arm64,x64}.{dmg,zip}
 ```
 
 - `arm64` is for Apple Silicon (M1 and later); `x64` is for Intel Macs. Both need macOS 11 or later.
 - Builds are **ad-hoc signed** (no Apple Developer ID on the build machine). The first time someone opens the app, macOS will say it "can't be checked for malicious software". For local testing of a trusted build, use Finder’s **Open** flow or the relevant Privacy & Security setting.
 - For distribution without that warning, sign with a Developer ID certificate and notarize: set `mac.identity` to the certificate name, set `hardenedRuntime: true`, and add `notarize` settings (Apple ID / team ID) in `package.json` → `build`.
-- File associations: PDF, Word, Excel/CSV, PowerPoint and images all list DocumentHub under "Open With".
+- File associations: PDF, Word, Excel/CSV, PowerPoint and images all list Docaville under "Open With".
 
 ## App icon
 
@@ -159,7 +160,7 @@ One source drawing ([scripts/icon.mjs](scripts/icon.mjs)) generates every platfo
 
 Commit application source, the npm lockfile, required test input fixtures, fonts, license notices, and icon assets. `build/` contains required packaging inputs and is intentionally retained. `.gitignore` excludes dependencies, compiled output, release packages, temporary Electron profiles/model caches, generated QA exports/logs, personal tool settings, environment files, and signing material. Ignoring files does not remove files already tracked by Git.
 
-Native `ios/` and `android/` directories are currently generated and ignored. Revisit these rules before making native customizations that must be shared.
+Native `ios/` and `android/` project configuration, permissions, icons, and version settings are now tracked. Their platform-specific ignore rules exclude generated web assets, native build output, local SDK settings, and signing material. Run `npm run mobile:sync` before native builds.
 
 Run these commands from the project directory to inspect the Git connection:
 
@@ -185,6 +186,6 @@ These commands configure local Git only. After reviewing and committing the inte
 
 The recorded desktop UI acceptance used macOS arm64. Physical microphone permissions/accuracy/device switching, Windows native speech, Intel Mac, mobile/camera workflows, other browsers, and very large files still need acceptance testing. Imported-audio transcription is verified; the actual translation-model test covered English → German. Extractive answers work best with English questions/documents and cannot perform unrestricted reasoning. Recognition, translation, summaries, and table suggestions require review.
 
-Automatic speaker identification and scan perspective correction are not implemented. Developer ID signing/notarization, store packaging, application renaming, and installation acceptance remain release work. The recorded dependency audit still contains unresolved advisories; review/remediate them before broad commercial release. QA results establish the tested scope, not security certification or store approval.
+Automatic speaker identification and scan perspective correction are not implemented. Developer ID signing/notarization, store packaging, and installation acceptance remain release work. The renamed candidate resolves the previous npm advisories; the final audit evidence is in [the release verification](docs/release/verification.md). A clean audit does not replace security review. QA results establish the tested scope, not security certification or store approval.
 
 Third-party library/font/model terms must be reviewed for distribution. Packaged runtime notices are in `licenses/`; a license for this project's own source has not yet been selected.

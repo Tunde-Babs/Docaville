@@ -6,6 +6,7 @@ import { normalizeImage, decodeImage, imageToCanvas } from '../lib/image';
 import { OCR_LANGS } from '../lib/langs';
 import { TEMPLATES, type Template } from '../lib/templates';
 import { PRODUCTIVITY_TOOLS, type ProductivityTool } from './ProductivityHub';
+import AppInfo from './AppInfo';
 
 const GROUPS: [DocKind, string][] = [['doc', 'Word'], ['sheet', 'Excel'], ['slides', 'PowerPoint'], ['pdf', 'PDF']];
 
@@ -74,7 +75,7 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount }: Props)
       <section className="hero">
         <img className="hero-logo" src="./logo.svg" alt="" width={84} height={84} />
         <div className="hero-text">
-          <h1>DocumentHub</h1>
+          <h1>Docaville</h1>
           <p>Open, edit and convert PDF, Word, Excel, PowerPoint and images — on Windows, macOS, iOS and Android.</p>
           <div className="row wrap">
             <FilePick accept={ACCEPT} multiple onFiles={onOpen}>📂 Open files…</FilePick>
@@ -161,6 +162,7 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount }: Props)
           <FilePick accept=".pdf" onFiles={onOpen}>✏️ Edit a PDF</FilePick>
         </div>
       </section>
+      <AppInfo />
     </div>
   );
 }

@@ -1,0 +1,4 @@
+# Consistent source checkout; preserve Windows launch scripts and upstream notice text.
+* text=auto eol=lf
+*.bat text eol=crlf whitespace=cr-at-eol
+licenses/THIRD-PARTY-NOTICES.txt -text -whitespace

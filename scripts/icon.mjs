@@ -1,4 +1,4 @@
-// DocumentHub app icon — single source of truth for every platform variant.
+// Docaville app icon — single source of truth for every platform variant.
 // The design is drawn in an 824×824 "body" coordinate system and placed into a 1024 canvas:
 //   mac:  Apple grid — 824px squircle-ish tile with 100px transparent margin
 //   win:  near full-bleed rounded tile (Windows shows icons without a mask)

@@ -1,9 +1,9 @@
 {
-  "name": "documenthub",
-  "productName": "DocumentHub",
+  "name": "docaville",
+  "productName": "Docaville",
   "version": "1.1.0",
   "private": true,
-  "description": "Cross-platform office suite: PDF, Word, Excel, PowerPoint, images + OCR",
+  "description": "Local document editing, PDF tools, transcription, dictation, OCR, and translation",
   "main": "electron/main.cjs",
   "type": "module",
   "scripts": {
@@ -18,13 +18,19 @@
     "test": "electron tests/run-smoke.cjs",
     "test:regressions": "electron tests/run-regressions.cjs",
     "icons": "electron scripts/render-icons.cjs",
-    "mobile:assets": "npx @capacitor/assets generate --iconBackgroundColor \"#4F46E5\" --splashBackgroundColor \"#4F46E5\" --splashBackgroundColorDark \"#0B1020\"",
+    "mobile:assets": "capacitor-assets generate --iconBackgroundColor \"#4F46E5\" --splashBackgroundColor \"#4F46E5\" --splashBackgroundColorDark \"#0B1020\" --ios --android",
     "dist:mac": "npm run build && electron-builder --mac dmg zip --arm64 --x64 && node scripts/clean-unpacked.mjs",
     "test:productivity": "electron tests/run-productivity.cjs",
-    "test:models": "electron tests/run-productivity.cjs --ml"
+    "test:models": "electron tests/run-productivity.cjs --ml",
+    "desktop:package": "npm run build && electron-builder --dir",
+    "dist:win": "npm run build && electron-builder --win nsis --x64",
+    "dist:linux": "npm run build && electron-builder --linux AppImage --x64",
+    "test:release": "node --test tests/release.cjs",
+    "notices": "node scripts/third-party-notices.mjs",
+    "dist:mac:signed": "npm run build && npm run notices && electron-builder --config build/signed-mac.cjs --mac dmg zip --arm64 --x64"
   },
   "build": {
-    "appId": "com.documenthub.app",
+    "appId": "com.docaville.app",
     "files": [
       "dist/**",
       "electron/**",
@@ -100,10 +106,10 @@
       "minimumSystemVersion": "11.0",
       "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
       "extendInfo": {
-        "NSDocumentsFolderUsageDescription": "DocumentHub opens and saves the documents you choose.",
-        "NSDesktopFolderUsageDescription": "DocumentHub opens and saves the documents you choose.",
-        "NSDownloadsFolderUsageDescription": "DocumentHub opens and saves the documents you choose.",
-        "NSMicrophoneUsageDescription": "DocumentHub uses the microphone when you choose to record audio or dictate. Speech is processed on your device."
+        "NSDocumentsFolderUsageDescription": "Docaville opens and saves the documents you choose.",
+        "NSDesktopFolderUsageDescription": "Docaville opens and saves the documents you choose.",
+        "NSDownloadsFolderUsageDescription": "Docaville opens and saves the documents you choose.",
+        "NSMicrophoneUsageDescription": "Docaville uses the microphone when you choose to record audio or dictate. Speech is processed on your device."
       }
     },
     "win": {
@@ -122,8 +128,8 @@
         "AppImage"
       ]
     },
-    "productName": "DocumentHub",
-    "copyright": "Copyright © 2026 DocumentHub",
+    "productName": "Docaville",
+    "copyright": "Copyright \u00a9 2026 Docaville",
     "asar": true,
     "dmg": {
       "title": "${productName} ${version}",
@@ -149,6 +155,7 @@
   },
   "devDependencies": {
     "@capacitor/android": "^7.6.10",
+    "@capacitor/assets": "^4.0.0",
     "@capacitor/cli": "^7.6.10",
     "@capacitor/core": "^7.6.10",
     "@capacitor/filesystem": "^7.1.9",
@@ -156,21 +163,21 @@
     "@capacitor/share": "^7.0.4",
     "@huggingface/transformers": "^3.8.1",
     "@pdf-lib/fontkit": "^1.1.1",
-    "@tiptap/extension-color": "^2.27.3",
-    "@tiptap/extension-font-family": "^2.27.3",
-    "@tiptap/extension-highlight": "^2.27.3",
-    "@tiptap/extension-image": "^2.27.3",
-    "@tiptap/extension-link": "^2.27.3",
-    "@tiptap/extension-table": "^2.27.3",
-    "@tiptap/extension-table-cell": "^2.27.3",
-    "@tiptap/extension-table-header": "^2.27.3",
-    "@tiptap/extension-table-row": "^2.27.3",
-    "@tiptap/extension-text-align": "^2.27.3",
-    "@tiptap/extension-text-style": "^2.27.3",
-    "@tiptap/extension-underline": "^2.27.3",
-    "@tiptap/pm": "^2.27.3",
-    "@tiptap/react": "^2.27.3",
-    "@tiptap/starter-kit": "^2.27.3",
+    "@tiptap/extension-color": "^3.33.0",
+    "@tiptap/extension-font-family": "^3.33.0",
+    "@tiptap/extension-highlight": "^3.33.0",
+    "@tiptap/extension-image": "^3.33.0",
+    "@tiptap/extension-link": "^3.33.0",
+    "@tiptap/extension-table": "^3.33.0",
+    "@tiptap/extension-table-cell": "^3.33.0",
+    "@tiptap/extension-table-header": "^3.33.0",
+    "@tiptap/extension-table-row": "^3.33.0",
+    "@tiptap/extension-text-align": "^3.33.0",
+    "@tiptap/extension-text-style": "^3.33.0",
+    "@tiptap/extension-underline": "^3.33.0",
+    "@tiptap/pm": "^3.33.0",
+    "@tiptap/react": "^3.33.0",
+    "@tiptap/starter-kit": "^3.33.0",
     "@types/diff": "^7.0.2",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
@@ -201,11 +208,32 @@
     "electron@45.2.3": true
   },
   "author": {
-    "name": "DocumentHub"
+    "name": "Tunde Ajala"
   },
   "overrides": {
     "@huggingface/transformers": {
       "sharp": "^0.35.5"
+    },
+    "image-size": "^2.0.3",
+    "exceljs": {
+      "uuid": "^11.1.1"
+    },
+    "app-builder-lib": {
+      "minimatch": "^11.0.1"
+    },
+    "@electron/universal": {
+      "minimatch": "^11.0.1"
+    },
+    "xcode": {
+      "uuid": "^11.1.1"
     }
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tunde-Babs/Docaville.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Tunde-Babs/Docaville/issues"
+  },
+  "homepage": "https://github.com/Tunde-Babs/Docaville#readme"
 }
