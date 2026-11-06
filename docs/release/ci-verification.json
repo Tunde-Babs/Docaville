@@ -1,0 +1,69 @@
+{
+  "validatedSourceCommit": "8ca34065e122eed6ba799e1ecbb98d8c51fdd36f",
+  "verificationRun": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305230812",
+  "packageRun": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305231061",
+  "verificationJobs": [
+    {
+      "name": "ios",
+      "conclusion": "success",
+      "url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305230812/job/128192782720"
+    },
+    {
+      "name": "verify (macos-latest)",
+      "conclusion": "success",
+      "url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305230812/job/128192782898"
+    },
+    {
+      "name": "verify (windows-latest)",
+      "conclusion": "success",
+      "url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305230812/job/128192782955"
+    },
+    {
+      "name": "verify (ubuntu-latest)",
+      "conclusion": "success",
+      "url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305230812/job/128192783004"
+    },
+    {
+      "name": "android",
+      "conclusion": "success",
+      "url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305230812/job/128192783016"
+    }
+  ],
+  "packageJobs": [
+    {
+      "name": "package (windows-latest, windows, --win nsis --x64)",
+      "conclusion": "success",
+      "url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305231061/job/128192782655"
+    },
+    {
+      "name": "package (macos-latest, mac, --mac dmg zip --arm64 --x64)",
+      "conclusion": "success",
+      "url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305231061/job/128192783018"
+    },
+    {
+      "name": "package (ubuntu-latest, linux, --linux AppImage --x64)",
+      "conclusion": "success",
+      "url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42305231061/job/128192783133"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13546706161,
+      "name": "Docaville-beta-mac",
+      "bytes": 618998636,
+      "expired": false
+    },
+    {
+      "id": 13545657897,
+      "name": "Docaville-beta-windows",
+      "bytes": 146670711,
+      "expired": false
+    },
+    {
+      "id": 13545009238,
+      "name": "Docaville-beta-linux",
+      "bytes": 159341073,
+      "expired": false
+    }
+  ]
+}

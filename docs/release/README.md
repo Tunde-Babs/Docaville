@@ -10,7 +10,7 @@ This folder tracks the release candidate. A successful build is not device accep
 | Preserve legacy desktop recovery profiles and internal storage contracts | Implemented; synthetic migration checks included |
 | Resolve dependency advisories and revalidate editing | Complete: zero known npm advisories; tests/build passed (verification.md) |
 | Add local privacy information, support link, dependency notices, and release workflows | Implemented; store policy/contact review remains |
-| Configure native iOS and Android projects, permissions, icons, and build numbers | Android APK/AAB compiled; iOS source configured, Xcode environment blocked (verification.md) |
+| Configure native iOS and Android projects, permissions, icons, and build numbers | Android APK/AAB compiled; iOS simulator compiled in CI, local Xcode environment blocked (verification.md) |
 | Clean-machine/device acceptance and accessibility/performance checks | Pending real-device testing |
 | Developer ID, notarization, Windows signing, store accounts | Requires owner credentials/accounts |
 | Paid product model, pricing, store billing and purchase restoration if applicable | Free viewing / Pro editing and productivity selected; price, store setup and purchase implementation pending (commercialization.md); beta includes all features |
@@ -52,7 +52,7 @@ Native projects are tracked because permissions, manifests, signing settings, ic
 - `npm run dist:win`: NSIS x64 on a Windows build host. Configure a trusted Windows signing service/certificate before commercial distribution. ARM Windows is not claimed.
 - `npm run dist:linux`: optional x64 AppImage on Linux; separate acceptance required.
 - `.github/workflows/verify.yml`: web build and engine checks on macOS, Windows, Linux, plus native Android compilation/lint and an unsigned iOS simulator build when pushed; does not establish hardware acceptance.
-- `.github/workflows/beta-packages.yml`: manually triggered unsigned/ad-hoc desktop build artifacts; never publishes a store listing or GitHub release automatically.
+- `.github/workflows/beta-packages.yml`: unsigned/ad-hoc desktop build artifacts, triggered manually or by desktop-source changes on the preparation branch; never publishes a store listing or GitHub release automatically.
 
 For Mac App Store distribution, assess sandbox permissions, document access/security-scoped bookmarks, native speech, model storage, and helper entitlements separately. Developer ID notarization is for direct distribution and is not Mac App Store approval.
 

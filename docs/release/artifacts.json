@@ -1,17 +1,17 @@
 [
   {
     "file": "Docaville-1.1.0-android-unsigned.aab",
-    "sha256": "9bca5a4bf33f4ee92204f4114884fb384f7976b538b364309cde3de252dd808b",
-    "bytes": 39541218
+    "sha256": "3fe1d1ebc01481a6928680e63eb5ecc0e094e909315a836efd2ac62706644626",
+    "bytes": 39545287
   },
   {
     "file": "Docaville-1.1.0-beta-android-debug.apk",
-    "sha256": "dfa67163a36900e19899eb810f35a1083a7ca451ab210d9b14423460afdd2e9f",
-    "bytes": 46792345
+    "sha256": "bbb5084bee928078f35262e0a0fab94e95ed8a186560d5e5880f7c8ded18bc72",
+    "bytes": 47147489
   },
   {
     "file": "Docaville-1.1.0-beta-mac-arm64.zip",
-    "sha256": "b5c5ea061a0978f94ee6588f0e4401293c39154c8769690748b09e608109beac",
-    "bytes": 153130865
+    "sha256": "e52b26668cb36bd615d8475617f745e699bda052dbcb20d3e615046202f3439e",
+    "bytes": 153133619
   }
 ]

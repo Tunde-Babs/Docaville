@@ -1,0 +1,122 @@
+[
+  {
+    "name": "page ranges preserve requested order and reject duplicates",
+    "pass": true
+  },
+  {
+    "name": "invalid and out-of-range pages fail safely",
+    "pass": true
+  },
+  {
+    "name": "batch filenames are safe and collision resistant",
+    "pass": true
+  },
+  {
+    "name": "CSV preserves quoted newlines, quotes, leading zeros and formula-like text",
+    "pass": true
+  },
+  {
+    "name": "Markdown and TSV tables retain rows and columns",
+    "pass": true
+  },
+  {
+    "name": "review decisions never apply pending or rejected changes",
+    "pass": true
+  },
+  {
+    "name": "template fields are unique and substituted values cannot inject markup",
+    "pass": true
+  },
+  {
+    "name": "PDF source passages keep page references",
+    "pass": true
+  },
+  {
+    "name": "batch PDF extraction respects order",
+    "pass": true
+  },
+  {
+    "name": "batch page numbering is present in saved PDF",
+    "pass": true
+  },
+  {
+    "name": "batch watermark is present in saved PDF",
+    "pass": true
+  },
+  {
+    "name": "batch converts text to a readable PDF",
+    "pass": true
+  },
+  {
+    "name": "batch compression produces all pages at original dimensions",
+    "pass": true
+  },
+  {
+    "name": "batch cancellation prevents processing",
+    "pass": true
+  },
+  {
+    "name": "scan crop and rotation preserve expected geometry",
+    "pass": true
+  },
+  {
+    "name": "transcript timestamps and review flags survive normalization",
+    "pass": true
+  },
+  {
+    "name": "custom vocabulary respects Unicode word boundaries and literal punctuation",
+    "pass": true
+  },
+  {
+    "name": "local structured storage persists binary data",
+    "pass": true
+  },
+  {
+    "name": "version archive retains 30 versions and replaces its current recovery draft",
+    "pass": true
+  },
+  {
+    "name": "editor checkpoint serializes the latest active draft and successful save cancels pending recovery",
+    "pass": true
+  },
+  {
+    "name": "closing one document flushes only its speech input before serialization",
+    "pass": true
+  },
+  {
+    "name": "failed speech flush blocks Save All instead of losing pending speech",
+    "pass": true
+  },
+  {
+    "name": "Free reader renders pdf without editable controls, writes, or source mutation",
+    "pass": true
+  },
+  {
+    "name": "Free reader renders doc without editable controls, writes, or source mutation",
+    "pass": true
+  },
+  {
+    "name": "Free reader renders sheet without editable controls, writes, or source mutation",
+    "pass": true
+  },
+  {
+    "name": "Free reader renders slides without editable controls, writes, or source mutation",
+    "pass": true
+  },
+  {
+    "name": "Free reader renders image without editable controls, writes, or source mutation",
+    "pass": true
+  },
+  {
+    "name": "Free reader reports unsupported input without exposing an editor",
+    "pass": true
+  },
+  {
+    "name": "Free reader rapid source replacement renders the latest document safely",
+    "pass": true
+  },
+  {
+    "name": "Free reader preserves text when PDF font coverage prevents a layout preview",
+    "pass": true
+  }
+]
