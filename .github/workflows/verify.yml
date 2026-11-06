@@ -1,7 +1,9 @@
 name: Verify Docaville
 on:
   push:
+    paths-ignore: ['docs/**', 'licenses/**', 'README.md']
   pull_request:
+    paths-ignore: ['docs/**', 'licenses/**', 'README.md']
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,6 +24,13 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Configure Linux Electron sandbox helper
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          node -e "require('electron')"
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
       - run: npm run build
       - run: npm run test:release
       - name: Desktop engine and recovery checks
@@ -52,7 +61,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx cap sync android
-      - run: ./gradlew assembleDebug lintDebug --no-daemon
+      - run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug --no-daemon
         working-directory: android
   ios:
     runs-on: macos-latest
