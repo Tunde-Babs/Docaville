@@ -10,17 +10,18 @@ import AppInfo from './AppInfo';
 
 const GROUPS: [DocKind, string][] = [['doc', 'Word'], ['sheet', 'Excel'], ['slides', 'PowerPoint'], ['pdf', 'PDF']];
 
-interface Props { onOpen: (f: File[]) => void; onCreate: (kind: DocKind, name: string, bytes?: Uint8Array | null, template?: string) => void; onTool: (tool: ProductivityTool) => void; recoveryCount: number }
+interface Props { onOpen: (f: File[]) => void; onCreate: (kind: DocKind, name: string, bytes?: Uint8Array | null, template?: string) => void; onTool: (tool: ProductivityTool) => void; recoveryCount: number; proAccess: boolean; onUpgrade: () => void }
 
 type Target = 'pdf' | 'pdf-ocr' | 'docx-images' | 'docx-ocr';
 
-export default function Home({ onOpen, onCreate, onTool, recoveryCount }: Props) {
+export default function Home({ onOpen, onCreate, onTool, recoveryCount, proAccess, onUpgrade }: Props) {
   const [images, setImages] = useState<File[]>([]);
   const [target, setTarget] = useState<Target>('pdf');
   const [pageSize, setPageSize] = useState<'fit' | 'a4' | 'letter'>('a4');
   const [lang, setLang] = useState('auto');
 
   async function createFrom(t: Template) {
+    if (!proAccess) { onUpgrade(); return; }
     if (t.kind === 'pdf') {
       const bytes = await run('Creating PDF…', async () => (await import('../lib/templates')).pdfTemplate(t.id));
       if (bytes) onCreate('pdf', t.file, bytes, t.id);
@@ -28,6 +29,7 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount }: Props)
   }
 
   async function convert() {
+    if (!proAccess) { onUpgrade(); return; }
     await run('Converting…', async () => {
       const imgs = (await Promise.all(images.map(async (f) => normalizeImage(new Uint8Array(await f.arrayBuffer()), f.type)))).flat();
       if (target === 'pdf' || target === 'pdf-ocr') {
@@ -59,6 +61,7 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount }: Props)
   }
 
   async function mergePdfs(files: File[]) {
+    if (!proAccess) { onUpgrade(); return; }
     await run('Merging PDFs…', async () => {
       const { PDFDocument } = await import('pdf-lib');
       const out = await PDFDocument.create();
@@ -87,6 +90,8 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount }: Props)
           <span className="chip kind-slides">PPTX</span><span className="chip kind-pdf">PDF</span><span className="chip kind-image">OCR</span>
         </div>
       </section>
+
+      {!proAccess && <p className="panel">Viewing is free. Pro unlocks editing, creation, conversion, and productivity tools. Previously saved recovery data remains accessible.</p>}
 
       <section><h2>Work smarter</h2>{recoveryCount > 0 && <button className="recovery-banner" onClick={() => onTool('recovery')}>{recoveryCount} local recovery draft{recoveryCount === 1 ? '' : 's'} available — review and restore</button>}<div className="cards">{PRODUCTIVITY_TOOLS.map(([id, icon, label, description]) => <button key={id} className="card" onClick={() => onTool(id)}><span className="card-icon">{icon}</span>{label}<small>{description}</small></button>)}</div></section>
 
@@ -150,16 +155,16 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount }: Props)
               </select>
             </label>
           )}
-          <button className="btn primary" disabled={!images.length} onClick={convert}>Convert</button>
+          <button className="btn primary" disabled={!images.length} onClick={convert}>Convert{!proAccess && ' · Pro'}</button>
         </div>
       </section>
 
       <section className="panel">
         <h2>More tools</h2>
         <div className="row wrap">
-          <FilePick accept=".pdf" multiple onFiles={mergePdfs}>🧩 Merge PDFs</FilePick>
-          <FilePick accept="image/*,.heic,.tif,.tiff" onFiles={onOpen}>🔍 OCR / edit an image</FilePick>
-          <FilePick accept=".pdf" onFiles={onOpen}>✏️ Edit a PDF</FilePick>
+          {proAccess ? <FilePick accept=".pdf" multiple onFiles={mergePdfs}>🧩 Merge PDFs</FilePick> : <button className="btn" onClick={onUpgrade}>Merge PDFs · Pro</button>}
+          <FilePick accept="image/*,.heic,.tif,.tiff" onFiles={onOpen}>{proAccess ? '🔍 OCR / edit an image' : 'View an image'}</FilePick>
+          <FilePick accept=".pdf" onFiles={onOpen}>{proAccess ? '✏️ Edit a PDF' : 'View a PDF'}</FilePick>
         </div>
       </section>
       <AppInfo />

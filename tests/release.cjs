@@ -25,3 +25,13 @@ test('mobile exports use private storage and preserve legacy save destinations',
   assert.throws(() => mobileTarget('Report.docx', '../private.json'));
   assert.throws(() => mobileTarget('..'));
 });
+test('free preview has no editing access and beta access is explicitly labelled', async () => {
+  const { releaseEdition } = await import('../src/lib/edition.ts');
+  assert.equal(releaseEdition('free-preview').canEdit, false);
+  assert.equal(releaseEdition('beta').canEdit, true);
+  assert.match(releaseEdition('beta').label, /Beta/);
+});
+test('unconfigured commercial channel cannot masquerade as verified Pro access', async () => {
+  const { releaseEdition } = await import('../src/lib/edition.ts');
+  for (const channel of ['store', 'production', 'pro', 'paid', 'unexpected']) assert.throws(() => releaseEdition(channel), /Store release is not configured/);
+});

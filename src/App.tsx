@@ -6,7 +6,12 @@ import { saveRegistry, flushPendingInputs } from './components/useSave';
 import Home from './components/Home';
 import { type ProductivityTool } from './components/ProductivityHub';
 import { versions, type LocalVersion } from './lib/localStore';
+import { releaseEdition } from './lib/edition';
+import ProDialog from './components/ProDialog';
 const ProductivityHub = lazy(() => import('./components/ProductivityHub'));
+const FreeViewer = lazy(() => import('./components/FreeViewer'));
+const RecoveryTools = lazy(() => import('./components/RecoveryTools'));
+const EDITION = releaseEdition(import.meta.env.VITE_RELEASE_CHANNEL ?? 'beta');
 
 // Each editor is code-split so the app starts fast on phones.
 const PdfEditor = lazy(() => import('./editors/PdfEditor'));
@@ -32,7 +37,10 @@ export default function App() {
   const [recoveryCount, setRecoveryCount] = useState(0);
   const [recoveryStatus, setRecoveryStatus] = useState<Record<string, { at?: number; error?: string }>>({});
   const [extraDirty, setExtraDirty] = useState<string[]>([]);
-  const openTool = (next: ProductivityTool) => { setTool(next); setToolsOpened(true); setActive('tools'); };
+  const [showPro, setShowPro] = useState(false);
+  const upgrade = useCallback(() => setShowPro(true), []);
+  const closePro = useCallback(() => setShowPro(false), []);
+  const openTool = (next: ProductivityTool) => { if (!EDITION.canEdit && next !== 'recovery') { upgrade(); return; } setTool(next); setToolsOpened(true); setActive('tools'); };
   useEffect(() => {
     const refresh = () => { void versions().then(items => setRecoveryCount(items.filter(item => item.source === 'autosave').length)).catch(() => undefined); };
     const status = (event: Event) => { const detail = (event as CustomEvent).detail; setRecoveryStatus(current => ({ ...current, [detail.id]: detail })); };
@@ -70,10 +78,11 @@ export default function App() {
   }, [addFile]);
 
   const create = useCallback((kind: DocKind, name: string, bytes: Uint8Array | null = null, template?: string) => {
+    if (!EDITION.canEdit) { upgrade(); return; }
     const of: OpenFile = { id: newId(), name, kind, bytes, mime: '', template, dirty: !!bytes || (!!template && !template.endsWith('-blank')) };
     setFiles((fs) => [...fs, of]);
     setActive(of.id);
-  }, []);
+  }, [upgrade]);
 
   // Save / Save As / edits update a document's location, name and unsaved state.
   const change = useCallback((id: string, patch: Partial<OpenFile>) => setFiles((fs) => fs.map((f) => (f.id === id ? { ...f, ...patch } : f))), []);
@@ -96,9 +105,9 @@ export default function App() {
     }
     removeTab(id);
   }, [removeTab]);
-  const createDocument = (name: string, html: string) => { addFile({ id: newId(), name: `${name.replace(/\.[^.]+$/, '')}.docx`, kind: 'doc', bytes: null, initialHtml: html, mime: '', dirty: true }); };
+  const createDocument = (name: string, html: string) => { if (!EDITION.canEdit) { upgrade(); return; } addFile({ id: newId(), name: `${name.replace(/\.[^.]+$/, '')}.docx`, kind: 'doc', bytes: null, initialHtml: html, mime: '', dirty: true }); };
   const restoreVersion = (version: LocalVersion) => {
-    addFile({ id: newId(), name: version.name.replace(/(\.[^.]+)$/, '-recovered$1'), kind: version.kind, bytes: version.bytes, mime: '', dirty: true, recoveryState: version.state });
+    addFile({ id: newId(), name: version.name.replace(/(\.[^.]+)$/, '-recovered$1'), kind: version.kind, bytes: version.bytes, mime: '', dirty: EDITION.canEdit, recoveryState: version.state });
   };
 
   // Window title + unsaved count for the desktop shell (macOS close-button dot, quit prompt).
@@ -136,6 +145,7 @@ export default function App() {
       return true;
     });
     n.onMenu(async (cmd) => {
+      if (!EDITION.canEdit && ['save', 'save-as', 'print', 'undo', 'redo'].includes(cmd)) { upgrade(); return; }
       const id = activeRef.current, ed = saveRegistry.get(id), h = handlers.current;
       switch (cmd) {
         case 'open': h.openNative(await n.openDialog()); break;
@@ -156,6 +166,15 @@ export default function App() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (EDITION.canEdit) return;
+    const key = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && ['s', 'p'].includes(event.key.toLowerCase())) { event.preventDefault(); event.stopPropagation(); upgrade(); }
+    };
+    window.addEventListener('keydown', key, true);
+    return () => window.removeEventListener('keydown', key, true);
+  }, [upgrade]);
 
   // Drag & drop anywhere
   useEffect(() => {
@@ -184,18 +203,20 @@ export default function App() {
             <button className="x" onClick={(e) => { e.stopPropagation(); close(f.id); }} aria-label={f.dirty ? 'Close (unsaved changes)' : 'Close'}>{f.dirty ? '●' : '×'}</button>
           </div>
         ))}
+        <button className="tab plan-tab" onClick={upgrade}>{EDITION.label}</button>
       </nav>
       <main className="workspace">
-        {active === 'home' && <Home onOpen={open} onCreate={create} onTool={openTool} recoveryCount={recoveryCount} />}
+        {active === 'home' && <Home onOpen={open} onCreate={create} onTool={openTool} recoveryCount={recoveryCount} proAccess={EDITION.canEdit} onUpgrade={upgrade} />}
         <Suspense fallback={<div className="loading">Loading editor…</div>}>
-          {toolsOpened && <div className="editor-host" hidden={active !== 'tools'}><ProductivityHub tool={tool} navigate={setTool} createDocument={createDocument} restore={restoreVersion} files={files} /></div>}
+          {toolsOpened && <div className="editor-host" hidden={active !== 'tools'}>{EDITION.canEdit ? <ProductivityHub tool={tool} navigate={setTool} createDocument={createDocument} restore={restoreVersion} files={files} /> : <RecoveryTools files={files} restore={restoreVersion} />}</div>}
           {files.map((f) => {
             const E = EDITORS[f.kind];
-            return <div key={f.id} className="editor-host" hidden={active !== f.id}><E file={f} onChange={(p) => change(f.id, p)} onFail={() => removeTab(f.id)} /></div>;
+            return <div key={f.id} className="editor-host" hidden={active !== f.id}>{EDITION.canEdit ? <E file={f} onChange={(p) => change(f.id, p)} onFail={() => removeTab(f.id)} /> : <FreeViewer file={f} upgrade={upgrade} />}</div>;
           })}
         </Suspense>
       </main>
-      {files.some(f => f.id === active) && <div className="recovery-status" role="status">{recoveryStatus[active]?.error ? `Local recovery unavailable: ${recoveryStatus[active].error}. Save your file to preserve changes.` : recoveryStatus[active]?.at ? `Recovery checkpoint ${new Date(recoveryStatus[active].at!).toLocaleTimeString()}` : 'Changes are checkpointed locally after a short pause.'}<button onClick={() => openTool('recovery')}>Version history</button></div>}
+      {files.some(f => f.id === active) && <div className="recovery-status" role="status">{!EDITION.canEdit ? 'Read-only view · Original file unchanged' : recoveryStatus[active]?.error ? `Local recovery unavailable: ${recoveryStatus[active].error}. Save your file to preserve changes.` : recoveryStatus[active]?.at ? `Recovery checkpoint ${new Date(recoveryStatus[active].at!).toLocaleTimeString()}` : 'Changes are checkpointed locally after a short pause.'}<button onClick={() => openTool('recovery')}>Version history</button></div>}
+      {showPro && <ProDialog beta={EDITION.canEdit} close={closePro} />}
       <StatusLayer />
     </div>
   );

@@ -6,6 +6,8 @@ Create, edit, convert, and review PDFs, Word documents, spreadsheets, presentati
 
 No account or hosted document-processing backend is required. Cloud connections and team workspaces are deferred to a later build.
 
+The planned commercial model is **free viewing, with Pro unlocking editing and productivity tools**. The beta includes all features. A read-only tier preview is available with `npm run build:free-preview`; store purchases and restoration remain release work. See the [commercialization plan](docs/release/commercialization.md).
+
 ## Platforms
 
 One TypeScript/React codebase that opens, edits, converts and exports **PDF, Word (.docx), Excel (.xlsx/.csv), PowerPoint (.pptx) and images**, with on-device OCR. It runs on:
@@ -42,7 +44,7 @@ npm run test:productivity
 npm run test:models
 ```
 
-The recorded 1.1.0 build passed **100 automated checks**: 26 smoke checks, 49 regression checks, and 25 productivity/model checks. The model suite includes the productivity checks, so these two suites should not be added together. TypeScript and the production build also passed. Model tests download the required models on first use.
+The release preparation passed **114 distinct checks**: 26 smoke, 49 regression, 30 productivity/reader, 3 actual-model inference, and 6 release-policy checks. Model and productivity commands overlap, so count shared checks once. TypeScript and the production build also passed. Model tests download the required models on first use.
 
 `npm test` runs the engine smoke tests in headless Chromium. Inside VS Code's terminal, use `env -u ELECTRON_RUN_AS_NODE npm test`.
 `npm run test:regressions` runs the additional fixes from the 6 November exploratory review. The original report and evidence are in `docs/qa-2026-11-06`; current verification is written separately under `fix-verification`.

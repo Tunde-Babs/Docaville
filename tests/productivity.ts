@@ -11,6 +11,8 @@ import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import { useSave, saveRegistry, flushPendingInputs } from '../src/components/useSave';
+import FreeViewer from '../src/components/FreeViewer';
+import type { OpenFile } from '../src/lib/formats';
 
 const results: { name: string; pass: boolean; detail?: string }[] = [];
 const check = (condition: unknown, message: string) => { if (!condition) throw new Error(message); };
@@ -73,6 +75,75 @@ await test('closing one document flushes only its speech input before serializat
 await test('failed speech flush blocks Save All instead of losing pending speech', async () => {
   saveRegistry.set('qa-flush-failure', { print() {}, save: async () => false, flush: async () => false });
   try { check(await flushPendingInputs() === false, 'failure did not block close'); } finally { saveRegistry.delete('qa-flush-failure'); }
+});
+
+// Component integration checks mount an isolated reader, without driving a user's UI.
+async function readerFixture(kind: OpenFile['kind']): Promise<OpenFile> {
+  let bytes = sourceBytes, name = 'Reader.pdf';
+  if (kind === 'doc') {
+    const { jsonToDocx } = await import('../src/engines/docx');
+    bytes = await jsonToDocx({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Read-only Word acceptance.' }] }] }, 'Reader'); name = 'Reader.docx';
+  } else if (kind === 'sheet') {
+    const { loadWorkbook, saveXlsx } = await import('../src/engines/sheet');
+    const workbook = await loadWorkbook(null); workbook.worksheets[0].getCell('A1').value = 'Read-only spreadsheet'; bytes = await saveXlsx(workbook); name = 'Reader.xlsx';
+  } else if (kind === 'slides') {
+    const { newDeck, savePptx } = await import('../src/engines/slides'); bytes = (await savePptx(newDeck())).bytes; name = 'Reader.pptx';
+  } else if (kind === 'image') {
+    const image = document.createElement('canvas'); image.width = 400; image.height = 160;
+    const context = image.getContext('2d')!; context.fillStyle = '#fff'; context.fillRect(0, 0, 400, 160); context.fillStyle = '#000'; context.font = '20px Arial'; context.fillText('Read-only image', 20, 70);
+    bytes = await (await import('../src/lib/image')).canvasToBytes(image); name = 'Reader.png';
+  }
+  return { id: `qa-reader:${crypto.randomUUID()}`, name, kind, bytes, mime: '' };
+}
+async function waitForReader(host: HTMLElement) {
+  const deadline = Date.now() + 20000;
+  while (!host.querySelector<HTMLCanvasElement>('canvas')?.style.width && !host.querySelector('[role="alert"]') && Date.now() < deadline) await delay(50);
+  const error = host.querySelector('[role="alert"]'); check(!error, error?.textContent ?? 'reader error');
+  check(!!host.querySelector<HTMLCanvasElement>('canvas')?.style.width, 'reader did not render');
+}
+for (const kind of ['pdf', 'doc', 'sheet', 'slides', 'image'] as const) {
+  await test(`Free reader renders ${kind} without editable controls, writes, or source mutation`, async () => {
+    const file = await readerFixture(kind), before = file.bytes!.slice(), registered = saveRegistry.size;
+    const host = document.createElement('div'); host.style.width = '800px'; document.body.append(host); const root = createRoot(host);
+    try {
+      flushSync(() => root.render(createElement(FreeViewer, { file, upgrade() {} }))); await waitForReader(host);
+      check(!host.querySelector('[contenteditable="true"],textarea,input[type="text"]'), 'reader exposes document editing');
+      check(saveRegistry.size === registered && !saveRegistry.has(file.id), 'reader registered a disk save action');
+      check(file.bytes!.length === before.length && before.every((value, index) => file.bytes![index] === value), 'source bytes changed');
+    } finally { flushSync(() => root.unmount()); host.remove(); }
+  });
+}
+await test('Free reader reports unsupported input without exposing an editor', async () => {
+  const file: OpenFile = { id: 'qa-unsupported-reader', name: 'Legacy.doc', kind: 'doc', bytes: new TextEncoder().encode('unsupported legacy input'), mime: '' };
+  const host = document.createElement('div'), root = createRoot(host); document.body.append(host);
+  try {
+    flushSync(() => root.render(createElement(FreeViewer, { file, upgrade() {} })));
+    const deadline = Date.now() + 5000; while (!host.querySelector('[role="alert"]') && Date.now() < deadline) await delay(50);
+    check(host.querySelector('[role="alert"]')?.textContent?.includes('cannot be converted locally'), 'unsupported input did not explain the limitation');
+    check(!saveRegistry.has(file.id), 'unsupported reader registered a save');
+  } finally { flushSync(() => root.unmount()); host.remove(); }
+});
+await test('Free reader rapid source replacement renders the latest document safely', async () => {
+  const first = await readerFixture('doc'), latest = await readerFixture('pdf');
+  const host = document.createElement('div'); host.style.width = '800px'; document.body.append(host); const root = createRoot(host);
+  try {
+    flushSync(() => root.render(createElement(FreeViewer, { file: first, upgrade() {} })));
+    flushSync(() => root.render(createElement(FreeViewer, { file: latest, upgrade() {} }))); await waitForReader(host);
+    check(host.querySelector('canvas')?.getAttribute('aria-label')?.startsWith(latest.name), 'stale source displayed');
+  } finally { flushSync(() => root.unmount()); host.remove(); }
+});
+await test('Free reader preserves text when PDF font coverage prevents a layout preview', async () => {
+  const text = 'Keep this document text, including an unmapped symbol: \u{10ffff}';
+  const { jsonToDocx } = await import('../src/engines/docx');
+  const bytes = await jsonToDocx({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] }, 'Fallback');
+  const file: OpenFile = { id: 'qa-reader-fallback', name: 'Fallback.docx', kind: 'doc', bytes, mime: '' };
+  const host = document.createElement('div'), root = createRoot(host); document.body.append(host);
+  try {
+    flushSync(() => root.render(createElement(FreeViewer, { file, upgrade() {} })));
+    const deadline = Date.now() + 20000; while (!host.querySelector('[data-readonly-text]') && !host.querySelector('[role="alert"]') && Date.now() < deadline) await delay(50);
+    check(host.querySelector('[data-readonly-text]')?.textContent === text, 'text fallback changed or lost document content');
+    check(!saveRegistry.has(file.id), 'text fallback registered a write action');
+  } finally { flushSync(() => root.unmount()); host.remove(); }
 });
 if (new URL(location.href).searchParams.has('ml')) {
   await test('real on-device question answering returns an exact source answer', async () => { const result = await localInference('question-answering', { question: 'When is the renewal date?', context: 'The service begins in June. The renewal date is 12 March 2027. Payments are monthly.' }, message => console.log(message)); check(result.answer.includes('12 March 2027'), `wrong answer ${JSON.stringify(result)}`); });

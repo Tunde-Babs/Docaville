@@ -13,7 +13,7 @@ This folder tracks the release candidate. A successful build is not device accep
 | Configure native iOS and Android projects, permissions, icons, and build numbers | Android APK/AAB compiled; iOS source configured, Xcode environment blocked (verification.md) |
 | Clean-machine/device acceptance and accessibility/performance checks | Pending real-device testing |
 | Developer ID, notarization, Windows signing, store accounts | Requires owner credentials/accounts |
-| Paid product model, pricing, store billing and purchase restoration if applicable | Free app with paid feature unlock selected; split, price, and store setup pending; beta has no payment gate |
+| Paid product model, pricing, store billing and purchase restoration if applicable | Free viewing / Pro editing and productivity selected; price, store setup and purchase implementation pending (commercialization.md); beta includes all features |
 | TestFlight / Play closed testing / desktop beta feedback | Pending accounts and candidate acceptance |
 | Public store submission and staged commercial release | Pending preceding steps |
 

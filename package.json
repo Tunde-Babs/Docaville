@@ -27,7 +27,8 @@
     "dist:linux": "npm run build && electron-builder --publish never --linux AppImage --x64",
     "test:release": "node --test tests/release.cjs",
     "notices": "node scripts/third-party-notices.mjs",
-    "dist:mac:signed": "npm run build && npm run notices && electron-builder --publish never --config build/signed-mac.cjs --mac dmg zip --arm64 --x64"
+    "dist:mac:signed": "npm run build && npm run notices && electron-builder --publish never --config build/signed-mac.cjs --mac dmg zip --arm64 --x64",
+    "build:free-preview": "cross-env VITE_RELEASE_CHANNEL=free-preview npm run build"
   },
   "build": {
     "appId": "com.docaville.app",

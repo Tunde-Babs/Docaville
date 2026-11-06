@@ -1,6 +1,7 @@
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { cpSync, mkdirSync, readFileSync } from 'node:fs';
+import { releaseEdition } from './src/lib/edition';
 
 // Content-Security-Policy for production builds (dev needs inline HMR scripts, so it's build-only).
 // OCR fetches its WASM engine and language data from jsDelivr / projectnaptha on first use.
@@ -23,7 +24,11 @@ const csp = (): Plugin => ({
 });
 
 // base './' so the bundle loads from file:// (Electron) and capacitor://, not just http.
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const channel = process.env.VITE_RELEASE_CHANNEL ?? loadEnv(mode, process.cwd(), 'VITE_').VITE_RELEASE_CHANNEL ?? 'beta';
+  releaseEdition(channel); // Reject a retail build until verified billing has been implemented.
+  return {
+  define: { 'import.meta.env.VITE_RELEASE_CHANNEL': JSON.stringify(channel) },
   base: './',
   plugins: [react(), csp(), { name: 'local-ml-runtime', configureServer(server) {
     server.middlewares.use((request, response, next) => {
@@ -48,4 +53,5 @@ export default defineConfig({
   } }],
   worker: { format: 'es' },
   build: { target: 'es2022', chunkSizeWarningLimit: 4000 },
+  };
 });

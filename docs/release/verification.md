@@ -9,13 +9,16 @@ Prepared 6 November 2026. This records completed preparation and explicit releas
 | TypeScript and production assets | Pass (`npm run build`) |
 | Existing smoke suite | 26/26 pass after the Tiptap 3 security migration |
 | Regression suite | 49/49 pass |
-| Productivity and real model suite | 25/25 pass, including actual speech recognition, source answers, English–German translation, and recovery helpers |
-| New release checks | 4/4 pass: legacy profile selection, fresh profile selection, and mobile path compatibility/validation |
-| Total | 104 automated checks; the model suite already includes the productivity checks |
+| Productivity/reader checks | 30/30 pass in the final component/engine run; includes all five read-only formats, source immutability, no save registration, rapid replacement, unsupported input, and text fallback |
+| Actual model inference | 3/3 pass for speech recognition, source answers, and English–German translation in the completed model run |
+| New release checks | 6/6 pass: profile selection, mobile paths, Free/Beta access policy, and rejection of unconfigured retail channels |
+| Total | 114 distinct checks across smoke, regression, reader/productivity, model inference, and release-policy suites; overlapping suite cases are counted once |
 | npm dependency audit | Zero known npm advisories after patches; [audit JSON](dependency-audit.json). This does not assess every native dependency or establish security certification. |
 | Packaged macOS arm64 candidate | 78 production/native/notice files match the workspace; correct Docaville name, `com.docaville.app` bundle ID, and macOS 13 minimum matching Electron; ad-hoc signature integrity passes. [Package evidence](package-verification.json) |
 | Legacy recovery → renamed application | A synthetic draft created in the previous DocumentHub build was recovered as a copy in the Docaville package using the same isolated QA profile. Profile-selection policy was checked separately. No real user data was migrated or altered during testing. |
 | Upgraded Word editor | Recovered draft edited → native Save → close tab → native Open → content retained. Independent DOCX inspection confirms both markers and creator `Docaville`. [Evidence](word-recovery-verification.json) |
+| Free access preview | Creation gate verified in native UI; renderer component checks pass for five formats. Full native file-picker/Free-flow acceptance remains pending because UI automation became unreliable (stale-window/no-window responses). No claim of end-to-end paid unlock. |
+| Retail build guard | `VITE_RELEASE_CHANNEL=store npm run build` fails explicitly until verified billing is implemented; Beta remains fully enabled |
 | Privacy/support UI | In-app About/Privacy information opens and exposes support/model attribution links |
 | Android compilation | Final debug APK and unsigned release AAB build successfully with API 36, AGP 8.13.2, Gradle 8.13, version 1.1.0/build 11001 |
 | Android lint | Zero errors, 19 warnings; mostly generated resources/dependency currency/theme icon checks. [Summary](android-lint-summary.json) |
