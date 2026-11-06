@@ -49,7 +49,7 @@ Native projects are tracked because permissions, manifests, signing settings, ic
 - `npm run dist:mac:signed`: Developer ID distribution. Requires installed signing identity (`CSC_NAME`), `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, and `APPLE_TEAM_ID` in the environment/secret store. Configuration fails if required values are absent. Test signing/notarization on a fresh machine before distribution.
 - `npm run dist:win`: NSIS x64 on a Windows build host. Configure a trusted Windows signing service/certificate before commercial distribution. ARM Windows is not claimed.
 - `npm run dist:linux`: optional x64 AppImage on Linux; separate acceptance required.
-- `.github/workflows/verify.yml`: web build and engine checks on macOS, Windows, Linux when pushed; does not establish hardware acceptance.
+- `.github/workflows/verify.yml`: web build and engine checks on macOS, Windows, Linux, plus native Android compilation/lint and an unsigned iOS simulator build when pushed; does not establish hardware acceptance.
 - `.github/workflows/beta-packages.yml`: manually triggered unsigned/ad-hoc desktop build artifacts; never publishes a store listing or GitHub release automatically.
 
 For Mac App Store distribution, assess sandbox permissions, document access/security-scoped bookmarks, native speech, model storage, and helper entitlements separately. Developer ID notarization is for direct distribution and is not Mac App Store approval.
