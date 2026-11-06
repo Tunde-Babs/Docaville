@@ -1,0 +1,6 @@
+{
+  "case": "B02 active cell Cmd+S",
+  "expected": 7777,
+  "actual": 7777,
+  "pass": true
+}

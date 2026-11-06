@@ -1,0 +1,68 @@
+# Dependencies and generated application packages
+node_modules/
+/dist/
+/release/
+*.tsbuildinfo
+/coverage/
+/.nyc_output/
+/.vite/
+/.cache/
+
+# Temporary files, isolated Electron profiles, and downloaded model caches
+/tmp/
+/temp/
+/output/
+/.pytest_cache/
+__pycache__/
+*.py[cod]
+*.log
+*.log.*
+*.ax.txt
+*.tmp
+*.swp
+*.swo
+
+# Generated QA document exports (keep source fixtures and test scripts)
+/docs/qa-2026-11-06/fixtures/
+/docs/qa-2026-11-06/fix-verification/fixtures/
+/tests/fixtures/audio-desktop.docx
+/tests/fixtures/Scan-table.xlsx
+/tests/fixtures/DocumentHub-batch.zip
+
+# Capacitor platform projects are currently generated with `npx cap add`.
+# Revisit these rules before committing native customizations.
+/ios/
+/android/
+
+# Local environment, credentials, and signing material
+.env
+.env.*
+!.env.example
+!.env.*.example
+/.aws/
+/.ssh/
+/.npmrc
+*.pem
+*.key
+*.p12
+*.pfx
+*.mobileprovision
+*.provisionprofile
+*.jks
+*.keystore
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Personal editor and assistant settings
+/.idea/
+/.vscode/
+/.claude/
+/.codex/
+/.agents/
+*.code-workspace
+
+# Operating-system metadata
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini

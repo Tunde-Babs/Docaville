@@ -1,0 +1,218 @@
+{
+  "version": "1.0.1",
+  "installed": "/Applications/DocumentHub.app",
+  "bundleMatchesFinalBuild": true,
+  "matchedFiles": 41,
+  "archive": {
+    "file": "release/DocumentHub-1.0.1-mac-arm64.zip",
+    "sha256": "630fa5dac0002ae5e27aed98a87257ef2002c54e4fd3b6d9c847079403a9ea8e",
+    "bytes": 138006542
+  },
+  "files": [
+    {
+      "file": "dist/apple-touch-icon.png",
+      "workspace": "0356b4e6911d89a0c3d0a20046c56abb1370e23385ad7db306942de554b4db2f",
+      "installed": "0356b4e6911d89a0c3d0a20046c56abb1370e23385ad7db306942de554b4db2f"
+    },
+    {
+      "file": "dist/assets/ColorPicker-C7mHNakj.js",
+      "workspace": "b224962dadfee040d2fb32ce0043f1938bd528d192525cb3844663091b7380f2",
+      "installed": "b224962dadfee040d2fb32ce0043f1938bd528d192525cb3844663091b7380f2"
+    },
+    {
+      "file": "dist/assets/DocEditor-ykQMgJao.js",
+      "workspace": "609176d7ef0d52a37a90b8af6e7d0e8a274ffa6269a66772d6964cb411c6fe9a",
+      "installed": "609176d7ef0d52a37a90b8af6e7d0e8a274ffa6269a66772d6964cb411c6fe9a"
+    },
+    {
+      "file": "dist/assets/ImageEditor-C1ArotDS.js",
+      "workspace": "64776900e40067ab6d51c0718cb80ba4051f09e26faf018b3bc0b4bb76e3a604",
+      "installed": "64776900e40067ab6d51c0718cb80ba4051f09e26faf018b3bc0b4bb76e3a604"
+    },
+    {
+      "file": "dist/assets/NotoNaskhArabic-Regular-DeuHehgT.ttf",
+      "workspace": "2f4b88e6ee50fa82c617e2d1d4ba18281cb1c6cd71c3af3ec64970c23995db4b",
+      "installed": "2f4b88e6ee50fa82c617e2d1d4ba18281cb1c6cd71c3af3ec64970c23995db4b"
+    },
+    {
+      "file": "dist/assets/NotoSans-Regular-Dpf_lrdO.ttf",
+      "workspace": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "installed": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5"
+    },
+    {
+      "file": "dist/assets/NotoSansCJKsc-Regular-DxgKpThH.otf",
+      "workspace": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
+      "installed": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b"
+    },
+    {
+      "file": "dist/assets/PdfEditor-CH1sQKwn.js",
+      "workspace": "56797faaccfc35ace53b2e99bbb1702d8d350dfe6c6c13114ff36880a7b27a4d",
+      "installed": "56797faaccfc35ace53b2e99bbb1702d8d350dfe6c6c13114ff36880a7b27a4d"
+    },
+    {
+      "file": "dist/assets/SheetEditor-6jwVmeMZ.js",
+      "workspace": "6b572a68e6067fc516a66873496f9290531824b251118bbb252d605eb7223841",
+      "installed": "6b572a68e6067fc516a66873496f9290531824b251118bbb252d605eb7223841"
+    },
+    {
+      "file": "dist/assets/SlideEditor-CdHgBmbQ.js",
+      "workspace": "e641d6a8df3e1040b54ec6310f1d7870b80f41fea6ededd7f5734e3c317d54c0",
+      "installed": "e641d6a8df3e1040b54ec6310f1d7870b80f41fea6ededd7f5734e3c317d54c0"
+    },
+    {
+      "file": "dist/assets/UTIF-B_PV0qiD.js",
+      "workspace": "4fd375050a276026c7388464c705281633c073e694212fee505a6ac245b9ec9a",
+      "installed": "4fd375050a276026c7388464c705281633c073e694212fee505a6ac245b9ec9a"
+    },
+    {
+      "file": "dist/assets/__vite-browser-external-BIHI7g3E.js",
+      "workspace": "82507b0bb9ac4affaeb17c40968d830cbd6d14a2ffa04d8994faf1a78e58e1b5",
+      "installed": "82507b0bb9ac4affaeb17c40968d830cbd6d14a2ffa04d8994faf1a78e58e1b5"
+    },
+    {
+      "file": "dist/assets/_commonjs-dynamic-modules-TDtrdbi3.js",
+      "workspace": "590ab8057bc032c3e14f9f1a76aaeffd01da609413fb12888819ca0433c1fae9",
+      "installed": "590ab8057bc032c3e14f9f1a76aaeffd01da609413fb12888819ca0433c1fae9"
+    },
+    {
+      "file": "dist/assets/docx-yfgXNVbu.js",
+      "workspace": "b1fbb00bcd01d84f6d7ef77044a6a215e189114e4ac0a88e3502fe73282247f2",
+      "installed": "b1fbb00bcd01d84f6d7ef77044a6a215e189114e4ac0a88e3502fe73282247f2"
+    },
+    {
+      "file": "dist/assets/docxImport-CT8vuhwe.js",
+      "workspace": "84916554a54b8f1a43c6998cb8aa2bf0d856dec95f27c94bb225f8d9eec51248",
+      "installed": "84916554a54b8f1a43c6998cb8aa2bf0d856dec95f27c94bb225f8d9eec51248"
+    },
+    {
+      "file": "dist/assets/index-D5bBTicj.js",
+      "workspace": "5ebc5602f4078f1d1b45e4ff489df755c97b24ea64f063f2fd9cf37dd124be99",
+      "installed": "5ebc5602f4078f1d1b45e4ff489df755c97b24ea64f063f2fd9cf37dd124be99"
+    },
+    {
+      "file": "dist/assets/index-DMQTJy3b.js",
+      "workspace": "5bc322f15c18c3eb2ae7697215ff04bdc7414f88bccf6e0a8c74ac0b604fd18f",
+      "installed": "5bc322f15c18c3eb2ae7697215ff04bdc7414f88bccf6e0a8c74ac0b604fd18f"
+    },
+    {
+      "file": "dist/assets/index-DhqlveuM.css",
+      "workspace": "6104ac7f83f4aaf5f71ff8f932a1385236d39284eeb37696dd503a5cfbd4d2a9",
+      "installed": "6104ac7f83f4aaf5f71ff8f932a1385236d39284eeb37696dd503a5cfbd4d2a9"
+    },
+    {
+      "file": "dist/assets/index-DrqSu8Qb.js",
+      "workspace": "bcf6907fec0b5128f04ee602b50e2828ea2de5723d4cf9de51cfdd6dcd9134c7",
+      "installed": "bcf6907fec0b5128f04ee602b50e2828ea2de5723d4cf9de51cfdd6dcd9134c7"
+    },
+    {
+      "file": "dist/assets/index-dcUsdOqw.js",
+      "workspace": "c9d4e1ad290d3e46e9778e6076f2b48664eb58742be67efa737b8dbf0a39b035",
+      "installed": "c9d4e1ad290d3e46e9778e6076f2b48664eb58742be67efa737b8dbf0a39b035"
+    },
+    {
+      "file": "dist/assets/index-xhLOR63f.js",
+      "workspace": "cedaa401b61d6c442acdc06b52e2e91e98de236b6c5c1b5fbd6a3c7b5345a6c5",
+      "installed": "cedaa401b61d6c442acdc06b52e2e91e98de236b6c5c1b5fbd6a3c7b5345a6c5"
+    },
+    {
+      "file": "dist/assets/jszip.min-DZE9qgnO.js",
+      "workspace": "e5947cd32b12e9bc600d4c46698c0231086840ea6ce2a8d79334532be9508df2",
+      "installed": "e5947cd32b12e9bc600d4c46698c0231086840ea6ce2a8d79334532be9508df2"
+    },
+    {
+      "file": "dist/assets/jszip.min-sZkt1tQN.js",
+      "workspace": "36b306363c8b19f1708e01e92fe2bd4f77b07ee2341eb0c1e207aea3c7496a85",
+      "installed": "36b306363c8b19f1708e01e92fe2bd4f77b07ee2341eb0c1e207aea3c7496a85"
+    },
+    {
+      "file": "dist/assets/layoutPdf-Cb6WbEEj.js",
+      "workspace": "0b68c637fc47033f9e63f62f925be2977d18d13c7ce39a89d3caeeaf901ce716",
+      "installed": "0b68c637fc47033f9e63f62f925be2977d18d13c7ce39a89d3caeeaf901ce716"
+    },
+    {
+      "file": "dist/assets/libheif-bundle-B3U53DJU.js",
+      "workspace": "699c81c56422d471fe592d35152ea8a41654b6a97e9b4f204b974dd95c1c7b80",
+      "installed": "699c81c56422d471fe592d35152ea8a41654b6a97e9b4f204b974dd95c1c7b80"
+    },
+    {
+      "file": "dist/assets/ocr-zxWcxauU.js",
+      "workspace": "634135c42abd47365d250de34ec8511d84103692470b518358910ccc3703d453",
+      "installed": "634135c42abd47365d250de34ec8511d84103692470b518358910ccc3703d453"
+    },
+    {
+      "file": "dist/assets/ocrLayout-CutcClPh.js",
+      "workspace": "fea9619b040e9e02b698a64f9d189c36bccf0032bb12d175c5e43e452640352d",
+      "installed": "fea9619b040e9e02b698a64f9d189c36bccf0032bb12d175c5e43e452640352d"
+    },
+    {
+      "file": "dist/assets/paraFormat-D-a6LH_R.js",
+      "workspace": "8f956e00c7a96a93d974ca74426c59abf1d758a9dffa05fa8b1499c9dd2825cf",
+      "installed": "8f956e00c7a96a93d974ca74426c59abf1d758a9dffa05fa8b1499c9dd2825cf"
+    },
+    {
+      "file": "dist/assets/pdf-BbOTJfxR.js",
+      "workspace": "c455e5eac42dd2c8f138c29c3e616ee41951d91008ad3b2924cbd2d792762239",
+      "installed": "c455e5eac42dd2c8f138c29c3e616ee41951d91008ad3b2924cbd2d792762239"
+    },
+    {
+      "file": "dist/assets/pdf.worker.min-yatZIOMy.mjs",
+      "workspace": "1baa1844c89c80a5b2797c916e75ab29254be46d8e9cb53cb6364d7aad84be36",
+      "installed": "1baa1844c89c80a5b2797c916e75ab29254be46d8e9cb53cb6364d7aad84be36"
+    },
+    {
+      "file": "dist/assets/pdfCover-C_3B_91H.js",
+      "workspace": "b2ba0324ac927bdba7ee356bdb0c73e7bd4658a4de570f65b3984af6152b073f",
+      "installed": "b2ba0324ac927bdba7ee356bdb0c73e7bd4658a4de570f65b3984af6152b073f"
+    },
+    {
+      "file": "dist/assets/pdfFonts-CV6aQI8t.js",
+      "workspace": "2a05264309967294a0748da0e29085eb76410898d4257d698bda8f5be30e7ad6",
+      "installed": "2a05264309967294a0748da0e29085eb76410898d4257d698bda8f5be30e7ad6"
+    },
+    {
+      "file": "dist/assets/web-CIv1kr3W.js",
+      "workspace": "2eeb28f5d81237fbb1b5b8470757cef158b471d4bcbc3f7c172582338ecbccad",
+      "installed": "2eeb28f5d81237fbb1b5b8470757cef158b471d4bcbc3f7c172582338ecbccad"
+    },
+    {
+      "file": "dist/assets/web-Ci-HeBQF.js",
+      "workspace": "7f8ceb4c063158ff91ab3665cde3d4090f41bb53d1f3e167f1bcb4d3aacdd854",
+      "installed": "7f8ceb4c063158ff91ab3665cde3d4090f41bb53d1f3e167f1bcb4d3aacdd854"
+    },
+    {
+      "file": "dist/favicon.svg",
+      "workspace": "62d4193d645f84b70e9e1d7f6d23c01bebfa575763a28ba022ab42b2b4ceb6e8",
+      "installed": "62d4193d645f84b70e9e1d7f6d23c01bebfa575763a28ba022ab42b2b4ceb6e8"
+    },
+    {
+      "file": "dist/fonts/OFL-CJK.txt",
+      "workspace": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
+      "installed": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2"
+    },
+    {
+      "file": "dist/fonts/OFL.txt",
+      "workspace": "0dab92d0544f7b233403f14b84a663bdbfa746982eda629e7f4f9ffe1b036feb",
+      "installed": "0dab92d0544f7b233403f14b84a663bdbfa746982eda629e7f4f9ffe1b036feb"
+    },
+    {
+      "file": "dist/fonts/README.md",
+      "workspace": "81c2b569cd8ea5d4a9954f7488ba312b437804177a9dbad0f4e7c2080c4f3678",
+      "installed": "81c2b569cd8ea5d4a9954f7488ba312b437804177a9dbad0f4e7c2080c4f3678"
+    },
+    {
+      "file": "dist/icon-512.png",
+      "workspace": "6a28acc7e28abbd9c78755fcfdc1882fa94089b8b3aa294776b1c29b1ceb2e0a",
+      "installed": "6a28acc7e28abbd9c78755fcfdc1882fa94089b8b3aa294776b1c29b1ceb2e0a"
+    },
+    {
+      "file": "dist/index.html",
+      "workspace": "fc6ede097d5f024f162af5c6170dc9cbdcb3f085c17412a2547c074fa952c2c6",
+      "installed": "fc6ede097d5f024f162af5c6170dc9cbdcb3f085c17412a2547c074fa952c2c6"
+    },
+    {
+      "file": "dist/logo.svg",
+      "workspace": "62d4193d645f84b70e9e1d7f6d23c01bebfa575763a28ba022ab42b2b4ceb6e8",
+      "installed": "62d4193d645f84b70e9e1d7f6d23c01bebfa575763a28ba022ab42b2b4ceb6e8"
+    }
+  ]
+}

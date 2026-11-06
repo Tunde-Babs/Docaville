@@ -1,0 +1,211 @@
+{
+  "name": "documenthub",
+  "productName": "DocumentHub",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Cross-platform office suite: PDF, Word, Excel, PowerPoint, images + OCR",
+  "main": "electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "desktop:dev": "concurrently -k \"vite --port 5173 --strictPort\" \"wait-on tcp:5173 && cross-env ELECTRON_DEV_URL=http://localhost:5173 electron .\"",
+    "desktop:build": "npm run build && electron-builder --mac --win",
+    "mobile:sync": "npm run build && cap sync",
+    "ios": "npm run mobile:sync && cap open ios",
+    "android": "npm run mobile:sync && cap open android",
+    "test": "electron tests/run-smoke.cjs",
+    "test:regressions": "electron tests/run-regressions.cjs",
+    "icons": "electron scripts/render-icons.cjs",
+    "mobile:assets": "npx @capacitor/assets generate --iconBackgroundColor \"#4F46E5\" --splashBackgroundColor \"#4F46E5\" --splashBackgroundColorDark \"#0B1020\"",
+    "dist:mac": "npm run build && electron-builder --mac dmg zip --arm64 --x64 && node scripts/clean-unpacked.mjs",
+    "test:productivity": "electron tests/run-productivity.cjs",
+    "test:models": "electron tests/run-productivity.cjs --ml"
+  },
+  "build": {
+    "appId": "com.documenthub.app",
+    "files": [
+      "dist/**",
+      "electron/**",
+      "build/icon.png",
+      "licenses/**"
+    ],
+    "fileAssociations": [
+      {
+        "ext": [
+          "pdf"
+        ],
+        "name": "PDF Document",
+        "role": "Editor",
+        "icon": "build/icon.icns"
+      },
+      {
+        "ext": [
+          "docx",
+          "doc",
+          "rtf",
+          "odt",
+          "txt",
+          "md"
+        ],
+        "name": "Word Document",
+        "role": "Editor"
+      },
+      {
+        "ext": [
+          "xlsx",
+          "xlsm",
+          "csv",
+          "tsv"
+        ],
+        "name": "Spreadsheet",
+        "role": "Editor"
+      },
+      {
+        "ext": [
+          "pptx"
+        ],
+        "name": "Presentation",
+        "role": "Editor"
+      },
+      {
+        "ext": [
+          "png",
+          "jpg",
+          "jpeg",
+          "heic",
+          "heif",
+          "tif",
+          "tiff",
+          "webp",
+          "gif",
+          "bmp"
+        ],
+        "name": "Image",
+        "role": "Editor"
+      }
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "identity": "-",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "darkModeSupport": true,
+      "minimumSystemVersion": "11.0",
+      "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
+      "extendInfo": {
+        "NSDocumentsFolderUsageDescription": "DocumentHub opens and saves the documents you choose.",
+        "NSDesktopFolderUsageDescription": "DocumentHub opens and saves the documents you choose.",
+        "NSDownloadsFolderUsageDescription": "DocumentHub opens and saves the documents you choose.",
+        "NSMicrophoneUsageDescription": "DocumentHub uses the microphone when you choose to record audio or dictate. Speech is processed on your device."
+      }
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "target": [
+        "AppImage"
+      ]
+    },
+    "productName": "DocumentHub",
+    "copyright": "Copyright © 2026 DocumentHub",
+    "asar": true,
+    "dmg": {
+      "title": "${productName} ${version}",
+      "iconSize": 96,
+      "window": {
+        "width": 560,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 150,
+          "y": 190,
+          "type": "file"
+        },
+        {
+          "x": 410,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "@capacitor/android": "^7.6.10",
+    "@capacitor/cli": "^7.6.10",
+    "@capacitor/core": "^7.6.10",
+    "@capacitor/filesystem": "^7.1.9",
+    "@capacitor/ios": "^7.6.10",
+    "@capacitor/share": "^7.0.4",
+    "@huggingface/transformers": "^3.8.1",
+    "@pdf-lib/fontkit": "^1.1.1",
+    "@tiptap/extension-color": "^2.27.3",
+    "@tiptap/extension-font-family": "^2.27.3",
+    "@tiptap/extension-highlight": "^2.27.3",
+    "@tiptap/extension-image": "^2.27.3",
+    "@tiptap/extension-link": "^2.27.3",
+    "@tiptap/extension-table": "^2.27.3",
+    "@tiptap/extension-table-cell": "^2.27.3",
+    "@tiptap/extension-table-header": "^2.27.3",
+    "@tiptap/extension-table-row": "^2.27.3",
+    "@tiptap/extension-text-align": "^2.27.3",
+    "@tiptap/extension-text-style": "^2.27.3",
+    "@tiptap/extension-underline": "^2.27.3",
+    "@tiptap/pm": "^2.27.3",
+    "@tiptap/react": "^2.27.3",
+    "@tiptap/starter-kit": "^2.27.3",
+    "@types/diff": "^7.0.2",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^10.0.6",
+    "cross-env": "^10.1.0",
+    "diff": "^8.0.3",
+    "docx": "^9.15.2",
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0",
+    "exceljs": "^4.4.0",
+    "jszip": "^3.10.2",
+    "libheif-js": "^1.23.5",
+    "mammoth": "^1.13.0",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.10.38",
+    "pptxgenjs": "^4.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tesseract.js": "^5.1.1",
+    "typescript": "^7.0.2",
+    "utif": "^3.1.0",
+    "vite": "^6.4.5",
+    "wait-on": "^9.5.1"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "electron@45.2.3": true
+  },
+  "author": {
+    "name": "DocumentHub"
+  },
+  "overrides": {
+    "@huggingface/transformers": {
+      "sharp": "^0.35.5"
+    }
+  }
+}

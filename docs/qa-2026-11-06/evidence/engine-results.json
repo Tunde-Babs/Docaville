@@ -1,0 +1,146 @@
+{
+  "results": [
+    {
+      "name": "formula SUM baseline",
+      "expected": 60,
+      "actual": 60,
+      "pass": true
+    },
+    {
+      "name": "ROUND negative midpoint",
+      "expected": -2,
+      "actual": -1,
+      "pass": false
+    },
+    {
+      "name": "division by zero must not show old cached result",
+      "expected": "#DIV/0!",
+      "actual": "0.5",
+      "pass": false
+    },
+    {
+      "name": "dependent formula must propagate current error",
+      "expected": {
+        "err": "#DIV/0!"
+      },
+      "actual": 50,
+      "pass": false
+    },
+    {
+      "name": "rename sheet preserves dependent values",
+      "expected": "30",
+      "actual": "#REF!",
+      "pass": false
+    },
+    {
+      "name": "insert row adjusts formula reference",
+      "expected": "SUM(A2:A4)",
+      "actual": "SUM(A1:A3)",
+      "pass": false
+    },
+    {
+      "name": "insert row preserves sum",
+      "expected": "60",
+      "actual": "30",
+      "pass": false
+    },
+    {
+      "name": "CSV preserves numeric precision",
+      "expected": 1234.56789,
+      "actual": 1234.57,
+      "pass": false
+    },
+    {
+      "name": "CSV quoted spaces preserved",
+      "expected": "  keep spaces  ",
+      "actual": "keep spaces",
+      "pass": false
+    },
+    {
+      "name": "CSV leading zeros preserved",
+      "expected": "00123",
+      "actual": "00123",
+      "pass": true
+    },
+    {
+      "name": "macro project ZIP part preserved",
+      "expected": true,
+      "actual": false,
+      "pass": false
+    },
+    {
+      "name": "sheet PDF preserves complete cell text",
+      "expected": true,
+      "actual": false,
+      "pass": false
+    },
+    {
+      "name": "Unicode PDF text preserved",
+      "expected": true,
+      "actual": false,
+      "pass": false
+    },
+    {
+      "name": "Word hyperlink preserved on export",
+      "expected": true,
+      "actual": false,
+      "pass": false
+    },
+    {
+      "name": "Word hyperlink imported as anchor",
+      "expected": true,
+      "actual": false,
+      "pass": false
+    },
+    {
+      "name": "Word header included in PDF output",
+      "expected": true,
+      "actual": false,
+      "pass": false
+    },
+    {
+      "name": "Word multiple sections preserved",
+      "expected": 2,
+      "actual": 1,
+      "pass": false
+    },
+    {
+      "name": "Cover removes secret inside Form XObject",
+      "expected": false,
+      "actual": true,
+      "pass": false
+    },
+    {
+      "name": "Cover removes ordinary page text baseline",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "name": "Cover removes recoverable secret from all saved streams",
+      "expected": [],
+      "actual": [
+        "6 0 R"
+      ],
+      "pass": false
+    },
+    {
+      "name": "presentation save and reload baseline",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "image rotate dimensions baseline",
+      "expected": [
+        400,
+        800
+      ],
+      "actual": [
+        400,
+        800
+      ],
+      "pass": true
+    }
+  ]
+}

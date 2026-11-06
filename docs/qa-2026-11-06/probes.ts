@@ -1,0 +1,100 @@
+import { loadWorkbook, displayValue, evaluate, saveXlsx, setInput, toCsv } from '../../src/engines/sheet';
+import { PDFDocument, StandardFonts, PDFRawStream, decodePDFRawStream } from 'pdf-lib';
+import { savePdf, loadPdfJs, pdfToText } from '../../src/engines/pdf';
+import { richTextToPdf, sheetToPdf } from '../../src/engines/layoutPdf';
+import { jsonToDocx } from '../../src/engines/docx';
+import { importDocx } from '../../src/engines/docxImport';
+import JSZip from 'jszip';
+import { Document, Packer, Paragraph, TextRun, ExternalHyperlink, Header, Footer } from 'docx';
+import { newDeck, savePptx, loadPptx } from '../../src/engines/slides';
+import { renderEdited, DEFAULT_TRANSFORM, DEFAULT_ADJUST } from '../../src/engines/imageEdit';
+import { canvasToBytes } from '../../src/lib/image';
+
+const results: any[] = [], files: any[] = [];
+const record = (name: string, expected: unknown, actual: unknown) => results.push({ name, expected, actual, pass: JSON.stringify(expected) === JSON.stringify(actual) });
+const file = (name: string, bytes: Uint8Array) => { let s=''; for(let i=0;i<bytes.length;i+=32768) s+=String.fromCharCode(...bytes.subarray(i,i+32768)); files.push({name,base64:btoa(s)}); };
+const text = async (bytes: Uint8Array) => pdfToText(await loadPdfJs(bytes));
+
+(async () => {
+  const wb=await loadWorkbook(null), ws=wb.worksheets[0]; ws.name='Data';
+  ws.getCell('A1').value=10; ws.getCell('A2').value=20; ws.getCell('A3').value=30;
+  record('formula SUM baseline',60,evaluate(ws,'SUM(A1:A3)'));
+  record('ROUND negative midpoint',-2,evaluate(ws,'ROUND(-1.5,0)'));
+  ws.getCell('D1').value={formula:'A1/A2',result:0.5}; ws.getCell('A2').value=0;
+  record('division by zero must not show old cached result','#DIV/0!',displayValue(ws,ws.getCell('D1')));
+  record('dependent formula must propagate current error',{err:'#DIV/0!'},evaluate(ws,'D1*100'));
+  ws.getCell('A2').value=20;
+  const calc=wb.addWorksheet('Calc'); calc.getCell('A1').value={formula:'Data!A1+Data!A2'};
+  ws.name='Renamed'; record('rename sheet preserves dependent values','30',displayValue(calc,calc.getCell('A1')));
+  ws.name='Data';
+  ws.getCell('B1').value={formula:'SUM(A1:A3)'}; ws.spliceRows(1,0,[]);
+  record('insert row adjusts formula reference','SUM(A2:A4)',ws.getCell('B2').formula);
+  record('insert row preserves sum','60',displayValue(ws,ws.getCell('B2')));
+  file('structural-formulas.xlsx',await saveXlsx(wb));
+  const round=await loadWorkbook(null), rw=round.worksheets[0];
+  rw.getCell('A1').value=1234.56789; rw.getCell('A1').numFmt='#,##0.00';
+  const csv=toCsv(rw); const reimport=await loadWorkbook(new TextEncoder().encode(csv),'roundtrip.csv');
+  record('CSV preserves numeric precision',1234.56789,reimport.worksheets[0].getCell('A1').value);
+  file('numeric-roundtrip.csv',new TextEncoder().encode(csv));
+  const spaces=await loadWorkbook(new TextEncoder().encode('Name,Value\r\n"  keep spaces  ",00123'),'spaces.csv');
+  record('CSV quoted spaces preserved','  keep spaces  ',spaces.worksheets[0].getCell('A2').value);
+  record('CSV leading zeros preserved','00123',spaces.worksheets[0].getCell('B2').value);
+  const xz=await JSZip.loadAsync(await saveXlsx(round)); xz.file('xl/vbaProject.bin',new Uint8Array([0,1,2,3,4]));
+  const ct=await xz.file('[Content_Types].xml')!.async('string');
+  xz.file('[Content_Types].xml',ct.replace('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml','application/vnd.ms-excel.sheet.macroEnabled.main+xml').replace('</Types>','<Override PartName="/xl/vbaProject.bin" ContentType="application/vnd.ms-office.vbaProject"/></Types>'));
+  const macro=await xz.generateAsync({type:'uint8array'}); file('macro-container.xlsm',macro);
+  const macroAfter=await saveXlsx(await loadWorkbook(macro,'macro-container.xlsm'));
+  record('macro project ZIP part preserved',true,!!(await JSZip.loadAsync(macroAfter)).file('xl/vbaProject.bin'));
+  file('macro-container-after.xlsx',macroAfter);
+  const long='This is a long business description with essential terms and conditions that must not disappear when exported to PDF.';
+  rw.getCell('B1').value=long; rw.getCell('B1').alignment={wrapText:true};
+  const spdf=await sheetToPdf(rw); file('sheet-long-text.pdf',spdf);
+  record('sheet PDF preserves complete cell text',true,(await text(spdf)).includes(long));
+  const unicode='Ẹ káàárọ̀ — Привет — 你好 — مرحبا';
+  const json={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:unicode}]}]};
+  const updf=await richTextToPdf(json); file('unicode.pdf',updf);
+  record('Unicode PDF text preserved',true,(await text(updf)).includes('Привет') && (await text(updf)).includes('你好'));
+  const linkJson={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Visit QA site',marks:[{type:'link',attrs:{href:'https://example.com/qa'}}]}]}]};
+  const linkOut=await JSZip.loadAsync(await jsonToDocx(linkJson));
+  record('Word hyperlink preserved on export',true,(await linkOut.file('word/document.xml')!.async('string')).includes('hyperlink'));
+  const original=new Uint8Array(await Packer.toArrayBuffer(new Document({sections:[{
+    headers:{default:new Header({children:[new Paragraph('CONFIDENTIAL HEADER')]})},
+    footers:{default:new Footer({children:[new Paragraph('QA FOOTER')]})},
+    children:[new Paragraph({children:[new ExternalHyperlink({link:'https://example.com/qa',children:[new TextRun('Visit QA site')]})]})]
+  }]})));
+  file('header-hyperlink.docx',original);
+  const imported=await importDocx(original);
+  record('Word hyperlink imported as anchor',true,imported.html.includes('https://example.com/qa'));
+  const hp=await richTextToPdf(linkJson,'Test',imported.defaults); file('header-export.pdf',hp);
+  record('Word header included in PDF output',true,(await text(hp)).includes('CONFIDENTIAL HEADER'));
+  const two=new Uint8Array(await Packer.toArrayBuffer(new Document({sections:[{children:[new Paragraph('SECTION ONE')]},{children:[new Paragraph('SECTION TWO')]}]})));
+  const twoZip=await JSZip.loadAsync(two);
+  const sectionCount=(s:string)=>(s.match(/<w:sectPr[ >]/g)||[]).length;
+  const twoOut=await jsonToDocx({type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'SECTION ONE'}]},{type:'paragraph',content:[{type:'text',text:'SECTION TWO'}]}]},'Sections',{bytes:two});
+  record('Word multiple sections preserved',sectionCount(await twoZip.file('word/document.xml')!.async('string')),sectionCount(await (await JSZip.loadAsync(twoOut)).file('word/document.xml')!.async('string')));
+  file('two-sections.docx',two); file('two-sections-after.docx',twoOut);
+  const inner=await PDFDocument.create(), font=await inner.embedFont(StandardFonts.Helvetica); inner.addPage([300,100]).drawText('SECRET-QA-123',{x:20,y:40,font,size:18});
+  const outer=await PDFDocument.create(), pg=outer.addPage([400,200]); const embedded=await outer.embedPage(inner.getPage(0)); pg.drawPage(embedded,{x:50,y:50,width:300,height:100});
+  const xpdf=await outer.save(); file('xobject-secret.pdf',xpdf);
+  const covered=await savePdf([xpdf],[{src:0,index:0,rotation:0}],[{id:'cover',type:'rect',page:0,x:50,y:50,w:300,h:100,color:'#FFFFFF',opacity:1}]);
+  file('xobject-covered.pdf',covered);
+  record('Cover removes secret inside Form XObject',false,(await text(covered)).includes('SECRET-QA-123'));
+  const baseline=await savePdf([await inner.save()],[{src:0,index:0,rotation:0}],[{id:'cover2',type:'rect',page:0,x:0,y:0,w:300,h:100,color:'#FFFFFF',opacity:1}]);
+  record('Cover removes ordinary page text baseline',false,(await text(baseline)).includes('SECRET-QA-123'));
+  file('ordinary-covered.pdf',baseline);
+  const savedCover=await PDFDocument.load(baseline);
+  const allStreams=savedCover.context.enumerateIndirectObjects().flatMap(([ref,obj])=>{
+    if (!(obj instanceof PDFRawStream)) return [];
+    try { return [{ref:String(ref),data:new TextDecoder().decode(decodePDFRawStream(obj).decode())}]; } catch {return [];}
+  });
+  record('Cover removes recoverable secret from all saved streams',[],allStreams.filter(s=>s.data.includes('SECRET-QA-123') || s.data.toLowerCase().includes('5345435245542d51412d313233')).map(s=>s.ref));
+  const slideDeck=newDeck(); slideDeck.slides[0].els[0].text='QA presentation';
+  const pptx=(await savePptx(slideDeck)).bytes; file('qa-slides.pptx',pptx);
+  record('presentation save and reload baseline',true,(await loadPptx(pptx)).slides[0].els.some(e=>e.text==='QA presentation'));
+  const canvas=document.createElement('canvas'); canvas.width=800; canvas.height=400;
+  const ctx=canvas.getContext('2d')!;ctx.fillStyle='#eff6ff';ctx.fillRect(0,0,800,400);ctx.fillStyle='#143264';ctx.font='48px Arial';ctx.fillText('QA sample image 123',50,180);
+  file('qa-image.png',await canvasToBytes(canvas));
+  const rotated=renderEdited(canvas,{...DEFAULT_TRANSFORM,rotate:90},DEFAULT_ADJUST);
+  record('image rotate dimensions baseline',[400,800],[rotated.width,rotated.height]);
+  (window as any).__QA={results,files};
+})().catch(e=>{(window as any).__QA={results:[...results,{name:'harness error',pass:false,actual:String(e.stack||e)}],files};});

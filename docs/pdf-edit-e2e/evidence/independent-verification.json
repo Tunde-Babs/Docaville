@@ -1,0 +1,19 @@
+{
+  "original untouched": true,
+  "form: edited value persisted": true,
+  "form: original text retained": true,
+  "edited: two pages preserved": true,
+  "edited: replacement exactly once": true,
+  "edited: original removed": true,
+  "edited: cancelled edit absent": true,
+  "edited: unchanged lines preserved": true,
+  "edited: second page and form appearance preserved": true,
+  "final: two pages preserved": true,
+  "final: replacement exactly once": true,
+  "final: original removed": true,
+  "final: cancelled edit absent": true,
+  "final: unchanged lines preserved": true,
+  "final: second page and form appearance preserved": true,
+  "final: added text exactly once": true,
+  "final: superseded replacements absent": true
+}

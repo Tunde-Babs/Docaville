@@ -1,0 +1,6 @@
+{
+  "case": "B02 existing-file active-edit Cmd+S",
+  "expected": 9999,
+  "actual": 9999,
+  "pass": true
+}

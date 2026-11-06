@@ -1,0 +1,308 @@
+{
+  "results": [
+    {
+      "name": "formula SUM baseline",
+      "expected": 60,
+      "actual": 60,
+      "pass": true
+    },
+    {
+      "name": "ROUND negative midpoint",
+      "expected": -2,
+      "actual": -2,
+      "pass": true
+    },
+    {
+      "name": "ROUND(1.005,2)",
+      "expected": 1.01,
+      "actual": 1.01,
+      "pass": true
+    },
+    {
+      "name": "ROUND(-1.475,2)",
+      "expected": -1.48,
+      "actual": -1.48,
+      "pass": true
+    },
+    {
+      "name": "ROUND(21.5,-1)",
+      "expected": 20,
+      "actual": 20,
+      "pass": true
+    },
+    {
+      "name": "ROUND(-50.55,-2)",
+      "expected": -100,
+      "actual": -100,
+      "pass": true
+    },
+    {
+      "name": "division by zero must not show old cached result",
+      "expected": "#DIV/0!",
+      "actual": "#DIV/0!",
+      "pass": true
+    },
+    {
+      "name": "dependent formula must propagate current error",
+      "expected": {
+        "err": "#DIV/0!"
+      },
+      "actual": {
+        "err": "#DIV/0!"
+      },
+      "pass": true
+    },
+    {
+      "name": "saved formula cache records current error",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "rename sheet preserves dependent values",
+      "expected": "30",
+      "actual": "30",
+      "pass": true
+    },
+    {
+      "name": "insert row adjusts formula reference",
+      "expected": "SUM(A2:A4)",
+      "actual": "SUM(A2:A4)",
+      "pass": true
+    },
+    {
+      "name": "insert row preserves sum",
+      "expected": "60",
+      "actual": "60",
+      "pass": true
+    },
+    {
+      "name": "delete row shrinks cross-sheet absolute range",
+      "expected": "SUM('O''Brien'!$A$1:$A$2)",
+      "actual": "SUM('O''Brien'!$A$1:$A$2)",
+      "pass": true
+    },
+    {
+      "name": "delete row recalculates dependants",
+      "expected": "40",
+      "actual": "40",
+      "pass": true
+    },
+    {
+      "name": "reference updates leave string literals intact",
+      "expected": "\"A1 should remain A1\"",
+      "actual": "\"A1 should remain A1\"",
+      "pass": true
+    },
+    {
+      "name": "workbook snapshot restores dependency values",
+      "expected": "60",
+      "actual": "60",
+      "pass": true
+    },
+    {
+      "name": "insert column adjusts cross-sheet references",
+      "expected": "SUM('O''Brien'!$B$1:$B$3)",
+      "actual": "SUM('O''Brien'!$B$1:$B$3)",
+      "pass": true
+    },
+    {
+      "name": "insert column preserves sum",
+      "expected": "60",
+      "actual": "60",
+      "pass": true
+    },
+    {
+      "name": "new worksheet name avoids renamed Sheet2",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "CSV preserves numeric precision",
+      "expected": 1234.56789,
+      "actual": 1234.56789,
+      "pass": true
+    },
+    {
+      "name": "CSV quoted spaces preserved",
+      "expected": "  keep spaces  ",
+      "actual": "  keep spaces  ",
+      "pass": true
+    },
+    {
+      "name": "CSV leading zeros preserved",
+      "expected": "00123",
+      "actual": "00123",
+      "pass": true
+    },
+    {
+      "name": "macro project ZIP part preserved",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "sheet PDF preserves complete cell text",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "Unicode PDF text preserved",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "Yoruba diacritics survive PDF export",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "Arabic survives PDF export",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "Unicode export does not substitute question marks",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "name": "Word hyperlink preserved on export",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "Word hyperlink imported as anchor",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "Word header included in PDF output",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "Word multiple sections preserved",
+      "expected": 2,
+      "actual": 2,
+      "pass": true
+    },
+    {
+      "name": "editor retains explicit section boundary",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "Word edit and save preserves both sections",
+      "expected": 2,
+      "actual": 2,
+      "pass": true
+    },
+    {
+      "name": "section boundary stays before second section",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "boundary sentinel never leaks into saved text",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "name": "editor to DOCX retains hyperlink destination",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "internal hyperlink retains destination bookmark",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "Cover removes secret inside Form XObject",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "name": "Cover removes ordinary page text baseline",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "name": "Cover removes recoverable secret from all saved streams",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "presentation save and reload baseline",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "image rotate dimensions baseline",
+      "expected": [
+        400,
+        800
+      ],
+      "actual": [
+        400,
+        800
+      ],
+      "pass": true
+    },
+    {
+      "name": "save commits pending input before serialization",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "save succeeds after producing bytes",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "save writes once",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    },
+    {
+      "name": "an edit during save stays unsaved",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "cancelled Save As returns false",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "name": "cancelled Save As never clears dirty state",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    }
+  ]
+}

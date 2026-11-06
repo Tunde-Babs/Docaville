@@ -1,0 +1,188 @@
+{
+  "date": "2026-11-06",
+  "platform": "macOS 26.6.2 arm64",
+  "version": "1.0.0",
+  "node": "24.20.0",
+  "npm": "11.19.0",
+  "typecheck": "passed",
+  "baselineSmoke": {
+    "passed": 26,
+    "failed": 0
+  },
+  "additionalProbes": {
+    "passed": 5,
+    "failed": 17,
+    "total": 22
+  },
+  "signing": {
+    "signature": "adhoc",
+    "teamIdentifier": null
+  },
+  "files": [
+    {
+      "file": "dist/apple-touch-icon.png",
+      "installed": "0356b4e6911d89a0c3d0a20046c56abb1370e23385ad7db306942de554b4db2f",
+      "workspace": "0356b4e6911d89a0c3d0a20046c56abb1370e23385ad7db306942de554b4db2f"
+    },
+    {
+      "file": "dist/assets/ColorPicker-DLYn0ivf.js",
+      "installed": "e7a7a78e04b4b72d24c1feed6906a74ef2b4403485371b9438a92577dbb03f09",
+      "workspace": "e7a7a78e04b4b72d24c1feed6906a74ef2b4403485371b9438a92577dbb03f09"
+    },
+    {
+      "file": "dist/assets/DocEditor-BbPrhrqO.js",
+      "installed": "1db13b62db41ea2c0c8ba687e78bd378d51cd2601ee20154f104f99c860711fe",
+      "workspace": "1db13b62db41ea2c0c8ba687e78bd378d51cd2601ee20154f104f99c860711fe"
+    },
+    {
+      "file": "dist/assets/ImageEditor-B8s687jl.js",
+      "installed": "33a8b48fbaa049d28cc76083a183a6a6095a5deb63c21a657872b19c50a31357",
+      "workspace": "33a8b48fbaa049d28cc76083a183a6a6095a5deb63c21a657872b19c50a31357"
+    },
+    {
+      "file": "dist/assets/PdfEditor-D6wfj8sA.js",
+      "installed": "de8026c2a9f39f5f1196853c5229a65681ff1b03e4a75f1869e6e355ff14b080",
+      "workspace": "de8026c2a9f39f5f1196853c5229a65681ff1b03e4a75f1869e6e355ff14b080"
+    },
+    {
+      "file": "dist/assets/SheetEditor-n7228wH5.js",
+      "installed": "0b14b56f74fa86906265266425ffcb3e4335c958298c4f2cc83747e869b136a2",
+      "workspace": "0b14b56f74fa86906265266425ffcb3e4335c958298c4f2cc83747e869b136a2"
+    },
+    {
+      "file": "dist/assets/SlideEditor-BX6Ag3Nj.js",
+      "installed": "ab0ffa226cb18975df48bfcb21449e5c1b7a4a7c4ebb28d8c4b50617bec8698b",
+      "workspace": "ab0ffa226cb18975df48bfcb21449e5c1b7a4a7c4ebb28d8c4b50617bec8698b"
+    },
+    {
+      "file": "dist/assets/UTIF-DVXYfC4t.js",
+      "installed": "e7eb5169132177f9d12321a95309e3875e09cdedb2d91805f781b4b76b541bb5",
+      "workspace": "e7eb5169132177f9d12321a95309e3875e09cdedb2d91805f781b4b76b541bb5"
+    },
+    {
+      "file": "dist/assets/__vite-browser-external-BIHI7g3E.js",
+      "installed": "82507b0bb9ac4affaeb17c40968d830cbd6d14a2ffa04d8994faf1a78e58e1b5",
+      "workspace": "82507b0bb9ac4affaeb17c40968d830cbd6d14a2ffa04d8994faf1a78e58e1b5"
+    },
+    {
+      "file": "dist/assets/_commonjs-dynamic-modules-TDtrdbi3.js",
+      "installed": "590ab8057bc032c3e14f9f1a76aaeffd01da609413fb12888819ca0433c1fae9",
+      "workspace": "590ab8057bc032c3e14f9f1a76aaeffd01da609413fb12888819ca0433c1fae9"
+    },
+    {
+      "file": "dist/assets/docx-BV99YUJ2.js",
+      "installed": "809d340a3c95ee62560365c8647143ebdef4f5d20fd177199d2bb47441be31b6",
+      "workspace": "809d340a3c95ee62560365c8647143ebdef4f5d20fd177199d2bb47441be31b6"
+    },
+    {
+      "file": "dist/assets/docxImport-WUOJLKvm.js",
+      "installed": "fb3c7cc7d2e0e574c832812eaaaa84944c8afe2d8351a6d854a523b497024cc8",
+      "workspace": "fb3c7cc7d2e0e574c832812eaaaa84944c8afe2d8351a6d854a523b497024cc8"
+    },
+    {
+      "file": "dist/assets/index-6GUsLKqy.js",
+      "installed": "d263cc0948d1707b641789143c7ff3cd98b7377036912dab839e400928589d57",
+      "workspace": "d263cc0948d1707b641789143c7ff3cd98b7377036912dab839e400928589d57"
+    },
+    {
+      "file": "dist/assets/index-CNIAd7m_.js",
+      "installed": "e20df58945b77633a275183cc196759bc8403450f144b0ab4bf02abcb587d8cc",
+      "workspace": "e20df58945b77633a275183cc196759bc8403450f144b0ab4bf02abcb587d8cc"
+    },
+    {
+      "file": "dist/assets/index-C_pPwlZx.js",
+      "installed": "dfe03085b90d1e8c166206027c4c3fcaade5f4bf7610fea5d92d719ce5b71333",
+      "workspace": "dfe03085b90d1e8c166206027c4c3fcaade5f4bf7610fea5d92d719ce5b71333"
+    },
+    {
+      "file": "dist/assets/index-DMQTJy3b.js",
+      "installed": "5bc322f15c18c3eb2ae7697215ff04bdc7414f88bccf6e0a8c74ac0b604fd18f",
+      "workspace": "5bc322f15c18c3eb2ae7697215ff04bdc7414f88bccf6e0a8c74ac0b604fd18f"
+    },
+    {
+      "file": "dist/assets/index-Df_QfCTp.css",
+      "installed": "759894c59722ff11e42423a0c1fab225b5ef89ebf7fc14ae2c4e78110c3ef5fa",
+      "workspace": "759894c59722ff11e42423a0c1fab225b5ef89ebf7fc14ae2c4e78110c3ef5fa"
+    },
+    {
+      "file": "dist/assets/index-EpKZBZ5K.js",
+      "installed": "0d2f877113c3104623e4470ec59f3fa0e1c678b84dcec00e88eddc7326f5ccfa",
+      "workspace": "0d2f877113c3104623e4470ec59f3fa0e1c678b84dcec00e88eddc7326f5ccfa"
+    },
+    {
+      "file": "dist/assets/jszip.min-UaO5p4PL.js",
+      "installed": "66ee437dbe4ef0c85c9c11ed5562f302f0bcaf5c073dabe0d1785ea316d53941",
+      "workspace": "66ee437dbe4ef0c85c9c11ed5562f302f0bcaf5c073dabe0d1785ea316d53941"
+    },
+    {
+      "file": "dist/assets/jszip.min-qPa48QIL.js",
+      "installed": "5924041533486cbf011b3c8cafb820520494e2380ef3cf4a17d9e27e668edea5",
+      "workspace": "5924041533486cbf011b3c8cafb820520494e2380ef3cf4a17d9e27e668edea5"
+    },
+    {
+      "file": "dist/assets/layoutPdf-x4v9_q68.js",
+      "installed": "abbfd475be28f5ba327dede56df77faeab54d5835cc0e44ff1402a7dcd3c3012",
+      "workspace": "abbfd475be28f5ba327dede56df77faeab54d5835cc0e44ff1402a7dcd3c3012"
+    },
+    {
+      "file": "dist/assets/libheif-bundle-B3U53DJU.js",
+      "installed": "699c81c56422d471fe592d35152ea8a41654b6a97e9b4f204b974dd95c1c7b80",
+      "workspace": "699c81c56422d471fe592d35152ea8a41654b6a97e9b4f204b974dd95c1c7b80"
+    },
+    {
+      "file": "dist/assets/ocr-qDoq1T2u.js",
+      "installed": "d4535f19614b80a25c11f0b437e5fa61c632f63aa9774abd3deb342b74e57aac",
+      "workspace": "d4535f19614b80a25c11f0b437e5fa61c632f63aa9774abd3deb342b74e57aac"
+    },
+    {
+      "file": "dist/assets/ocrLayout-CutcClPh.js",
+      "installed": "fea9619b040e9e02b698a64f9d189c36bccf0032bb12d175c5e43e452640352d",
+      "workspace": "fea9619b040e9e02b698a64f9d189c36bccf0032bb12d175c5e43e452640352d"
+    },
+    {
+      "file": "dist/assets/paraFormat-D-a6LH_R.js",
+      "installed": "8f956e00c7a96a93d974ca74426c59abf1d758a9dffa05fa8b1499c9dd2825cf",
+      "workspace": "8f956e00c7a96a93d974ca74426c59abf1d758a9dffa05fa8b1499c9dd2825cf"
+    },
+    {
+      "file": "dist/assets/pdf--lX0GhJm.js",
+      "installed": "08eb3d72c0160cb7b942803a0ebc50862ec321f3d1c01c42ef3e5e862b22d3cb",
+      "workspace": "08eb3d72c0160cb7b942803a0ebc50862ec321f3d1c01c42ef3e5e862b22d3cb"
+    },
+    {
+      "file": "dist/assets/pdf.worker.min-yatZIOMy.mjs",
+      "installed": "1baa1844c89c80a5b2797c916e75ab29254be46d8e9cb53cb6364d7aad84be36",
+      "workspace": "1baa1844c89c80a5b2797c916e75ab29254be46d8e9cb53cb6364d7aad84be36"
+    },
+    {
+      "file": "dist/assets/web-BagBZSiA.js",
+      "installed": "5953137310745836f6b7318dc184d31b6471377b16dd05f66a727b1fa7148a9e",
+      "workspace": "5953137310745836f6b7318dc184d31b6471377b16dd05f66a727b1fa7148a9e"
+    },
+    {
+      "file": "dist/assets/web-Du2dUFD0.js",
+      "installed": "6dab5528667374f1a9e79a579091742e01df7a5ffce118cb1c6d3df137d4fc22",
+      "workspace": "6dab5528667374f1a9e79a579091742e01df7a5ffce118cb1c6d3df137d4fc22"
+    },
+    {
+      "file": "dist/favicon.svg",
+      "installed": "62d4193d645f84b70e9e1d7f6d23c01bebfa575763a28ba022ab42b2b4ceb6e8",
+      "workspace": "62d4193d645f84b70e9e1d7f6d23c01bebfa575763a28ba022ab42b2b4ceb6e8"
+    },
+    {
+      "file": "dist/icon-512.png",
+      "installed": "6a28acc7e28abbd9c78755fcfdc1882fa94089b8b3aa294776b1c29b1ceb2e0a",
+      "workspace": "6a28acc7e28abbd9c78755fcfdc1882fa94089b8b3aa294776b1c29b1ceb2e0a"
+    },
+    {
+      "file": "dist/index.html",
+      "installed": "9394cdcad4cf87ddeae0a02cd0337c5786f6c4e561d3751456d4b5c75233f765",
+      "workspace": "9394cdcad4cf87ddeae0a02cd0337c5786f6c4e561d3751456d4b5c75233f765"
+    },
+    {
+      "file": "dist/logo.svg",
+      "installed": "62d4193d645f84b70e9e1d7f6d23c01bebfa575763a28ba022ab42b2b4ceb6e8",
+      "workspace": "62d4193d645f84b70e9e1d7f6d23c01bebfa575763a28ba022ab42b2b4ceb6e8"
+    }
+  ]
+}

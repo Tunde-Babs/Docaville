@@ -1,0 +1,6 @@
+{
+  "action": "Enter 7777 into B4, press Cmd+S without Enter or blur",
+  "expectedB4": 7777,
+  "actualDiskB4": 9999,
+  "uiToast": "Saved budget-formula-save.xlsx"
+}
