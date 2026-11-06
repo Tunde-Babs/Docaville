@@ -1,8 +1,14 @@
 name: Build unsigned beta packages
 on:
   workflow_dispatch:
+  push:
+    branches: ['release/docaville-1.1.0-preparation']
+    paths-ignore: ['docs/**', 'licenses/**', 'README.md']
 permissions:
   contents: read
+concurrency:
+  group: beta-packages-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   package:
     strategy:
@@ -31,6 +37,7 @@ jobs:
       - run: npm run build
       - run: npm run notices
       - run: npx electron-builder ${{ matrix.args }}
+      - run: node scripts/release-checksums.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: Docaville-beta-${{ matrix.target }}
@@ -39,4 +46,5 @@ jobs:
             release/*.zip
             release/*.exe
             release/*.AppImage
+            release/SHA256SUMS.txt
           if-no-files-found: error
