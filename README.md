@@ -134,7 +134,7 @@ Speaker labels are manual. Review operates on extracted text and does not round-
 npm run dist:mac      # → release/Docaville-1.1.0-mac-{arm64,x64}.{dmg,zip}
 ```
 
-- `arm64` is for Apple Silicon (M1 and later); `x64` is for Intel Macs. Both need macOS 11 or later.
+- `arm64` is for Apple Silicon (M1 and later); `x64` is for Intel Macs. Both require macOS 13 or later, matching the bundled Electron runtime.
 - Builds are **ad-hoc signed** (no Apple Developer ID on the build machine). The first time someone opens the app, macOS will say it "can't be checked for malicious software". For local testing of a trusted build, use Finder’s **Open** flow or the relevant Privacy & Security setting.
 - For distribution without that warning, sign with a Developer ID certificate and notarize: set `mac.identity` to the certificate name, set `hardenedRuntime: true`, and add `notarize` settings (Apple ID / team ID) in `package.json` → `build`.
 - File associations: PDF, Word, Excel/CSV, PowerPoint and images all list Docaville under "Open With".

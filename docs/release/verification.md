@@ -13,7 +13,7 @@ Prepared 6 November 2026. This records completed preparation and explicit releas
 | New release checks | 4/4 pass: legacy profile selection, fresh profile selection, and mobile path compatibility/validation |
 | Total | 104 automated checks; the model suite already includes the productivity checks |
 | npm dependency audit | Zero known npm advisories after patches; [audit JSON](dependency-audit.json). This does not assess every native dependency or establish security certification. |
-| Packaged macOS arm64 candidate | 78 production/native/notice files match the workspace; correct Docaville name and `com.docaville.app` bundle ID; ad-hoc signature integrity passes. [Package evidence](package-verification.json) |
+| Packaged macOS arm64 candidate | 78 production/native/notice files match the workspace; correct Docaville name, `com.docaville.app` bundle ID, and macOS 13 minimum matching Electron; ad-hoc signature integrity passes. [Package evidence](package-verification.json) |
 | Legacy recovery → renamed application | A synthetic draft created in the previous DocumentHub build was recovered as a copy in the Docaville package using the same isolated QA profile. Profile-selection policy was checked separately. No real user data was migrated or altered during testing. |
 | Upgraded Word editor | Recovered draft edited → native Save → close tab → native Open → content retained. Independent DOCX inspection confirms both markers and creator `Docaville`. [Evidence](word-recovery-verification.json) |
 | Privacy/support UI | In-app About/Privacy information opens and exposes support/model attribution links |

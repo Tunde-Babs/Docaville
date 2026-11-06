@@ -103,7 +103,7 @@
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
       "darkModeSupport": true,
-      "minimumSystemVersion": "11.0",
+      "minimumSystemVersion": "13.0",
       "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
       "extendInfo": {
         "NSDocumentsFolderUsageDescription": "Docaville opens and saves the documents you choose.",
