@@ -1,0 +1,128 @@
+{
+  "version": "1.1.1-beta.1",
+  "sourceCommit": "603ef3503faa9caca5b725d96390f08d59ba9791",
+  "releaseURL": "https://github.com/Tunde-Babs/Docaville/releases/tag/v1.1.1-beta.1",
+  "prerelease": true,
+  "anonymousDownloadVerified": true,
+  "ciJobs": [
+    {
+      "name": "package (macos-latest, mac, --mac dmg zip --arm64 --x64)",
+      "conclusion": "success",
+      "html_url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42362700009/job/128374217805"
+    },
+    {
+      "name": "package (ubuntu-latest, linux, --linux AppImage --x64)",
+      "conclusion": "success",
+      "html_url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42362700009/job/128374217967"
+    },
+    {
+      "name": "package (windows-latest, windows, --win nsis --x64)",
+      "conclusion": "success",
+      "html_url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42362700009/job/128374217993"
+    },
+    {
+      "name": "android",
+      "conclusion": "success",
+      "html_url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42362700010/job/128374217914"
+    },
+    {
+      "name": "ios",
+      "conclusion": "success",
+      "html_url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42362700010/job/128374217930"
+    },
+    {
+      "name": "verify (windows-latest)",
+      "conclusion": "success",
+      "html_url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42362700010/job/128374217961"
+    },
+    {
+      "name": "verify (ubuntu-latest)",
+      "conclusion": "success",
+      "html_url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42362700010/job/128374218024"
+    },
+    {
+      "name": "verify (macos-latest)",
+      "conclusion": "success",
+      "html_url": "https://github.com/Tunde-Babs/Docaville/actions/runs/42362700010/job/128374218084"
+    }
+  ],
+  "installedPackage": {
+    "version": "1.1.1-beta.1",
+    "matchedFiles": 81,
+    "asarSHA256": "a757f2ff0c08f9ff3d13494a7029a00ff2b83b88000304e43c10be4f3390f95c",
+    "installed": "/Applications/Docaville.app"
+  },
+  "unrestrictedRendererCheck": {
+    "version": "1.1.1-beta.1",
+    "betaLabel": "Beta \u00b7 Pro included",
+    "editingWithoutPaidUnlock": true,
+    "packagedRenderer": true,
+    "profile": "isolated synthetic profile"
+  },
+  "openWith": {
+    "docx_handlers": [
+      "/Applications/Docaville.app"
+    ],
+    "pass": true
+  },
+  "oldAppBundlesArchived": 9,
+  "oldInstallerArchived": true,
+  "iosInstallable": false,
+  "iosBlocker": "Owner has no active Apple Developer Program membership or signing setup; local CoreSimulator framework is missing. CI simulator compilation passed.",
+  "assets": [
+    {
+      "name": "Docaville-1.1.1-beta.1-android.apk",
+      "size": 46460799,
+      "digest": "sha256:65b5d1cd735bcf1ee19ecbab6b45f907a7cddb6bb573fbe2ee429014a669c68c",
+      "browser_download_url": "https://github.com/Tunde-Babs/Docaville/releases/download/v1.1.1-beta.1/Docaville-1.1.1-beta.1-android.apk"
+    },
+    {
+      "name": "Docaville-1.1.1-beta.1-ios-source.zip",
+      "size": 39874134,
+      "digest": "sha256:5fe8e5cc22d5f596010f8a5af737fc3b25212303e1610a7e9cf414a5b2867f94",
+      "browser_download_url": "https://github.com/Tunde-Babs/Docaville/releases/download/v1.1.1-beta.1/Docaville-1.1.1-beta.1-ios-source.zip"
+    },
+    {
+      "name": "Docaville-1.1.1-beta.1-mac-arm64.dmg",
+      "size": 153481798,
+      "digest": "sha256:f09119fb3b88a2ecb99b9359def1a00276a3dbc4195256f25c083a54002add4a",
+      "browser_download_url": "https://github.com/Tunde-Babs/Docaville/releases/download/v1.1.1-beta.1/Docaville-1.1.1-beta.1-mac-arm64.dmg"
+    },
+    {
+      "name": "Docaville-1.1.1-beta.1-mac-arm64.zip",
+      "size": 148372965,
+      "digest": "sha256:058a17c09fb709decb505d686de78d8635e09dc2f7fde72d6ed7d7136da53aff",
+      "browser_download_url": "https://github.com/Tunde-Babs/Docaville/releases/download/v1.1.1-beta.1/Docaville-1.1.1-beta.1-mac-arm64.zip"
+    },
+    {
+      "name": "Docaville-1.1.1-beta.1-mac-x64.dmg",
+      "size": 161114101,
+      "digest": "sha256:14e34e69f3bb5cbff22411e2574ace64ad3c6346205078143dff8375bfafce7a",
+      "browser_download_url": "https://github.com/Tunde-Babs/Docaville/releases/download/v1.1.1-beta.1/Docaville-1.1.1-beta.1-mac-x64.dmg"
+    },
+    {
+      "name": "Docaville-1.1.1-beta.1-mac-x64.zip",
+      "size": 155947749,
+      "digest": "sha256:04c1b314c56c3433365afd5d931575a16aed696629795e20751f4c84986abbb1",
+      "browser_download_url": "https://github.com/Tunde-Babs/Docaville/releases/download/v1.1.1-beta.1/Docaville-1.1.1-beta.1-mac-x64.zip"
+    },
+    {
+      "name": "Docaville-1.1.1-beta.1-windows-x64.exe",
+      "size": 146666798,
+      "digest": "sha256:c8752de9c3caf0d2bd10ff097887d9eb18d5b7839a73c120aac3657f28762cf3",
+      "browser_download_url": "https://github.com/Tunde-Babs/Docaville/releases/download/v1.1.1-beta.1/Docaville-1.1.1-beta.1-windows-x64.exe"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 795,
+      "digest": "sha256:ae65234544b016e628903b7103837154f285e2dab25026570c82bb799e65366d",
+      "browser_download_url": "https://github.com/Tunde-Babs/Docaville/releases/download/v1.1.1-beta.1/SHA256SUMS.txt"
+    },
+    {
+      "name": "TESTING.md",
+      "size": 2111,
+      "digest": "sha256:db0d92976324ccac5a29d5c98b6fb1ba52e29435c0ff7c45cdc1f2b5fc83bc7a",
+      "browser_download_url": "https://github.com/Tunde-Babs/Docaville/releases/download/v1.1.1-beta.1/TESTING.md"
+    }
+  ]
+}

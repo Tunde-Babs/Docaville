@@ -28,4 +28,12 @@ The intended installed copy is `/Applications/Docaville.app`. Older DocumentHub,
 
 Save open documents and quit older copies before replacing app bundles. Application installation does not change the default handler for Word/PDF files; use Finder's Get Info → Open with → Change All only if you want to change that preference.
 
-Build/check evidence and final download locations are recorded after packaging. Commercial release remains on hold pending the existing acceptance, licensing, signing and purchase requirements; beta testing does not certify all devices.
+## Published beta and local installation
+
+[Download and share the beta](https://github.com/Tunde-Babs/Docaville/releases/tag/v1.1.1-beta.1). The public page contains Android APK, Apple Silicon/Intel Mac DMG and ZIP, Windows x64 installer, iOS developer source, tester instructions, and SHA-256 checksums. All nine server asset digests match the local files; an anonymous download was verified.
+
+Built from source commit `603ef35`. All eight CI verification/packaging jobs passed, including 125 distinct engine/release/worksheet/productivity checks per desktop platform and native Android/iOS compilation checks. Actual model inference was not rerun for this beta; physical-device acceptance remains pending. [Machine-readable evidence](beta-1.1.1-verification.json).
+
+Installed `/Applications/Docaville.app`; 81 packaged runtime/notice files match the built source. The installed renderer was tested in an isolated profile and can create an editable Word document with Beta · Pro included. Nine obsolete app bundles were archived to verified ZIPs, their unpacked copies removed, and the old installer ejected and moved out of Applications. Backups remain under local ignored `release/archived-apps-2026-11-07/`. A native DOCX handler query returns only `/Applications/Docaville.app` for Docaville/DocumentHub; default Word/PDF associations were not changed. Documents and application-data/recovery folders were not removed.
+
+The owner confirmed there is no active Apple Developer Program membership. iOS native distribution is pending that enrollment and signing/provisioning; the source archive is not an IPA. Local Xcode also lacks CoreSimulator; CI unsigned simulator compilation passed. Commercial release remains on hold pending the existing acceptance, licensing, signing and purchase requirements; beta testing does not certify all devices.
