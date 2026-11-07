@@ -8,4 +8,6 @@ Version identity: npm/desktop 1.1.1-beta.2; Android build 11003; iOS marketing v
 
 Validation: 12 image-to-Word regression checks, including explicit OCR opt-in, default worksheet-only export, no hidden raw OCR when excluded, editable-answer preservation and export/reopen/edit/export. TypeScript and production build pass. The supplied three-image document was cleaned into a separate three-page Word copy; its rendered source pages match the previously inspected source images. Private inputs/outputs remain under ignored local QA storage.
 
-The installed macOS update is prepared separately from published downloads. The cross-platform public beta 1 remains unchanged until a subsequent release is published; this source push produces new CI build artifacts but does not silently replace beta 1 release assets.
+Installed at `/Applications/Docaville.app` after the owner confirmed that work was saved and the app was closed. The app signature verifies, all 81 packaged runtime/notice files match the current built source, and the previous beta 1 ZIP remains available for rollback. The duplicate unpacked beta 2 app was removed after verifying its ZIP; application-data/recovery folders were not changed.
+
+The cross-platform public beta 1 remains unchanged until a subsequent release is published; this source push produces new CI build artifacts but does not silently replace beta 1 release assets.
