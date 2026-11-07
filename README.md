@@ -2,7 +2,7 @@
 
 Create, edit, convert, and review PDFs, Word documents, spreadsheets, presentations, and images. Turn speech and scans into editable documents with on-device transcription, dictation, OCR, and translation.
 
-**Current testing version: 1.1.1-beta.1.** Editing and productivity tools are included without paid unlocks in this beta. Application branding, package metadata, and new application identifiers use Docaville. Existing desktop recovery data uses the legacy profile when present; internal storage keys remain compatible. Commercial release remains pending the acceptance and signing checks in [the release checklist](docs/release/README.md).
+**Current development version: 1.1.1-beta.2.** Editing and productivity tools are included without paid unlocks in this beta. Worksheet export now excludes OCR text unless explicitly selected. The published cross-platform beta 1 downloads remain recorded in [the beta distribution notes](docs/release/beta-1.1.1.md). Existing desktop recovery data uses the legacy profile when present; internal storage keys remain compatible. Commercial release remains pending the acceptance and signing checks in [the release checklist](docs/release/README.md).
 
 **Release on hold (7 November 2026):** complex scanned worksheets failed editable image-to-Word fidelity. Image fitting and OCR review safeguards are corrected locally; faithful editable table/figure reconstruction remains unresolved. See [the conversion findings](docs/release/image-word-qa.md).
 

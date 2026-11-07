@@ -15,6 +15,7 @@ export default function ImageWordReview({ pages, name, close, onSaved }: { pages
   const [answers, setAnswers] = useState(() => pages.map(page => ({ past: [] as WorksheetAnnotation[][], present: page.annotations ?? [], future: [] as WorksheetAnnotation[][] })));
   const [index, setIndex] = useState(0);
   const [includeOriginals, setIncludeOriginals] = useState(true);
+  const [includeOcrText, setIncludeOcrText] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [url, setUrl] = useState('');
@@ -58,7 +59,7 @@ export default function ImageWordReview({ pages, name, close, onSaved }: { pages
     try {
       const bytes = await imagesToDocx(
         pages.map((source, i) => ({ bytes: source.bytes, mime: source.mime, sourceName: source.sourceName, text: texts[i], annotations: answers[i].present })),
-        { includeOriginals },
+        { includeOriginals, includeOcrText },
       );
       const saved = await saveFile(name, bytes);
       if (saved) { onSaved?.(bytes, saved); toast('Word document exported'); close(); }
@@ -72,14 +73,15 @@ export default function ImageWordReview({ pages, name, close, onSaved }: { pages
     <div className="row wrap"><button className="btn" disabled={index === 0 || saving} onClick={() => setIndex(index - 1)}>Previous</button>
       <span aria-live="polite">Source page {index + 1} of {pages.length}: {page.sourceName}</span>
       <button className="btn" disabled={index === pages.length - 1 || saving} onClick={() => setIndex(index + 1)}>Next</button></div>
-    <p className="muted">{page.savedWorksheet ? 'Saved worksheet. Your answers and reviewed OCR text have been restored; recognition confidence was not retained. Check against the original.' : <>Detected language: {page.ocr.langs ?? 'selected language'}. {uncertain} word{uncertain === 1 ? '' : 's'} below 70% recognition confidence. Check the whole page; confidence is only an estimate.</>}</p>
+    <p className="muted">{page.savedWorksheet ? (page.text ? 'Saved worksheet. Your answers and included OCR text have been restored; recognition confidence was not retained. Check against the original.' : 'Saved worksheet. Your answers have been restored. This file does not include extracted OCR text.') : <>Detected language: {page.ocr.langs ?? 'selected language'}. {uncertain} word{uncertain === 1 ? '' : 's'} below 70% recognition confidence. Check the whole page; confidence is only an estimate.</>}</p>
     <div className="image-word-review-columns"><div>{url && <WorksheetEditor key={index} url={url} pageNumber={index + 1} notes={answers[index].present} onChange={updateAnswers} disabled={saving}
       undo={() => undoAnswer()} redo={() => undoAnswer(true)} canUndo={!!answers[index].past.length} canRedo={!!answers[index].future.length} />}</div>
-      <label>Editable text for source page {index + 1}<textarea aria-label={`OCR text for source page ${index + 1}`} value={texts[index]} disabled={saving} spellCheck
+      <label>Extracted OCR text for source page {index + 1} · optional export<textarea aria-label={`OCR text for source page ${index + 1}`} value={texts[index]} disabled={saving} spellCheck
         onChange={event => setTexts(current => current.map((text, i) => i === index ? event.target.value : text))} /></label></div>
-    <label className="row"><input type="checkbox" checked={includeOriginals} disabled={saving || hasAnswers} onChange={event => setIncludeOriginals(event.target.checked)} />Include each original image before its editable text (recommended)</label>
+    <label className="row"><input type="checkbox" aria-label="Include worksheet pages" checked={includeOriginals} disabled={saving || hasAnswers} onChange={event => { setIncludeOriginals(event.target.checked); if (!event.target.checked) setIncludeOcrText(true); }} />Include worksheet pages and your positioned answers (recommended)</label>
+    <label className="row"><input type="checkbox" aria-label="Include extracted OCR text" checked={includeOcrText} disabled={saving} onChange={event => { setIncludeOcrText(event.target.checked); if (!event.target.checked) setIncludeOriginals(true); }} />Include extracted OCR text as additional Word pages (optional)</label>
     {hasAnswers && <p className="muted">Original pages are required to include your positioned answers and crosses.</p>}
-    <p className="muted">Each original gets its own fitted page. Recognized text starts on a separate page and may span more pages. Uncheck the option above for text only.</p>
+    <p className="muted">By default, Word contains only the worksheet pages with your answers and crosses. The OCR text on the right is included only when you select the optional OCR checkbox. To export text only, deselect worksheet pages.</p>
     {error && <p role="alert">Export failed: {error}. Your corrections are still here.</p>}
     {saving && <p role="status">Exporting reviewed Word document…</p>}
     <div className="row wrap"><button className="btn" disabled={saving} onClick={close}>Cancel</button><button className="btn primary" disabled={saving} onClick={exportWord}>Export reviewed Word document</button></div>

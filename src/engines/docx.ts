@@ -311,10 +311,11 @@ export type DocxImageItem = { bytes: Uint8Array; mime: string; layout?: OcrLayou
  *  - `paragraphs`: plain text (used when the user hand-edited the OCR text).
  *  - neither: each image on its own page at full resolution.
  */
-export async function imagesToDocx(items: DocxImageItem[], options: { includeOriginals?: boolean } = {}) {
+export async function imagesToDocx(items: DocxImageItem[], options: { includeOriginals?: boolean; includeOcrText?: boolean } = {}) {
   if (!items.length) throw new Error('Add at least one image before converting to Word.');
+  if (options.includeOriginals === false && options.includeOcrText === false) throw new Error('Choose worksheet pages, OCR text, or both before exporting.');
   const hasAnswers = items.some(item => item.annotations?.some(note => note.kind === 'cross' || note.text.trim()));
-  if (hasAnswers && !options.includeOriginals && items.some(item => item.text !== undefined || item.layout || item.paragraphs)) throw new Error('Include the original pages to preserve your worksheet answers.');
+  if (hasAnswers && options.includeOcrText !== false && !options.includeOriginals && items.some(item => item.text !== undefined || item.layout || item.paragraphs)) throw new Error('Include the original pages to preserve your worksheet answers.');
   const sections: ConstructorParameters<typeof Document>[0]['sections'][number][] = [];
   const page = (landscape = false) => ({
     size: { width: 11906, height: 16838, orientation: landscape ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT },
@@ -322,7 +323,7 @@ export async function imagesToDocx(items: DocxImageItem[], options: { includeOri
   });
   for (let i = 0; i < items.length; i++) {
     const it = items[i];
-    const editable = it.text !== undefined || !!it.layout || !!it.paragraphs;
+    const editable = options.includeOcrText !== false && (it.text !== undefined || !!it.layout || !!it.paragraphs);
     if (editable && !options.includeOriginals && it.annotations?.some(note => note.kind === 'cross' || note.text.trim())) throw new Error('Include the original pages to preserve your worksheet answers.');
     if (!editable || options.includeOriginals) {
       const image = await toEmbeddable(it.bytes, it.mime);
@@ -391,7 +392,7 @@ export async function imagesToDocx(items: DocxImageItem[], options: { includeOri
     box.setAttribute('inset', '0,0,0,0'); box.setAttribute('style', 'mso-fit-shape-to-text:f;');
   }
   zip.file('word/document.xml', new XMLSerializer().serializeToString(xml));
-  if (hasAnswers) await attachWorksheetProject(zip, items.map(item => ({ sourceName: item.sourceName ?? 'Worksheet page', text: item.text ?? '', annotations: item.annotations ?? [] })));
+  if (hasAnswers) await attachWorksheetProject(zip, items.map(item => ({ sourceName: item.sourceName ?? 'Worksheet page', text: options.includeOcrText === false ? '' : item.text ?? '', annotations: item.annotations ?? [] })));
   return zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
 }
 

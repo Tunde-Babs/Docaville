@@ -174,7 +174,7 @@ export default function ImageEditor({ file, onChange, onFail }: EditorProps) {
             await addTextLayer(pdf.doc, pdf.pages[0].page, o, pdf.pages[0].box);
             await saveFile(`${name}.pdf`, await pdf.doc.save());
           }),
-          exp('Word .docx (review OCR text + original)', async () => {
+          exp('Word .docx (worksheet answers / optional OCR)', async () => {
             const result = await ensureOcr();
             setWordReview([{ bytes: await canvasToBytes(output()), mime: 'image/png', sourceName: file.name, ocr: result.ocr, text: result.text }]);
           }),

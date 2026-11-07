@@ -1,7 +1,7 @@
 {
   "name": "docaville",
   "productName": "Docaville",
-  "version": "1.1.1-beta.1",
+  "version": "1.1.1-beta.2",
   "private": true,
   "description": "Local document editing, PDF tools, transcription, dictation, OCR, and translation",
   "main": "electron/main.cjs",

@@ -149,7 +149,7 @@ export default function Home({ onOpen, onOpenSaved, onCreate, onTool, recoveryCo
               <option value="pdf">PDF (exact image quality)</option>
               <option value="pdf-ocr">Searchable PDF (image + OCR text layer)</option>
               <option value="docx-images">Word .docx (preserve appearance as images)</option>
-              <option value="docx-ocr">Word .docx (review editable OCR text + originals)</option>
+              <option value="docx-ocr">Word .docx (worksheet answers / optional OCR)</option>
             </select>
           </label>
           {target.startsWith('pdf') && (

@@ -93,6 +93,9 @@ await test('OCR review keeps per-page edits, defaults to originals, and preserve
     const saveKey = new KeyboardEvent('keydown', { key: 's', ctrlKey: true, bubbles: true, cancelable: true });
     textarea().dispatchEvent(saveKey); assert(saveKey.defaultPrevented, 'Save shortcut escaped to underlying editor');
     assert(host.querySelector<HTMLInputElement>('input[type=checkbox]')!.checked, 'Originals not default');
+    const ocrOption = host.querySelector<HTMLInputElement>('input[aria-label="Include extracted OCR text"]')!;
+    assert(!ocrOption.checked, 'OCR pages should require explicit opt-in');
+    flushSync(() => ocrOption.click());
     function textarea() { return host.querySelector<HTMLTextAreaElement>('textarea[aria-label^="OCR text"]')!; }
     const change = (text: string) => { Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!.call(textarea(), text); textarea().dispatchEvent(new Event('input', { bubbles: true })); };
     flushSync(() => change('Meine korrigierten Grüße'));
@@ -209,7 +212,19 @@ await test('direct worksheet editing supports placement, typed answers, cross mo
     button('Export reviewed Word document').click(); await wait(() => closed);
     const { doc } = await xml(saved!);
     assert(doc.getElementsByTagNameNS('urn:schemas-microsoft-com:vml', 'shape').length === 2 && doc.documentElement.textContent!.includes('Das Buch steht im Regal.'), 'Saved Word lost direct page edits');
+    assert(doc.getElementsByTagNameNS(W, 'sectPr').length === 2 && !doc.documentElement.textContent!.includes('OCR remains separate'), 'Default export appended raw OCR pages');
+    const reopened = await readWorksheetDocument(saved!);
+    assert(reopened!.every(page => page.text === '') && reopened![0].annotations.length === 2, 'Excluded OCR persisted in hidden project data or answers were lost');
   } finally { flushSync(() => root.unmount()); host.remove(); window.showSaveFilePicker = beforePicker; }
+});
+await test('excluding OCR removes both visible text and hidden raw text while retaining editable answers', async () => {
+  const bytes = await imagesToDocx([{ ...items[0], text: 'RAW_OCR_SHOULD_NOT_BE_SAVED', annotations: [{ id: 'answer-only', kind: 'text', text: 'My answer', color: '#d32f2f', size: 0.022, width: 0.3, x: 0.2, y: 0.4 }] }], { includeOriginals: true, includeOcrText: false });
+  const { doc, zip } = await xml(bytes);
+  assert(doc.getElementsByTagNameNS(W, 'sectPr').length === 1 && doc.documentElement.textContent!.includes('My answer'), 'Worksheet or positioned answer missing');
+  assert(!(await zip.file('word/document.xml')!.async('string')).includes('RAW_OCR_SHOULD_NOT_BE_SAVED'), 'Raw OCR saved as visible text');
+  assert(!(await zip.file('word/docaville-worksheet.xml')!.async('string')).includes('RAW_OCR_SHOULD_NOT_BE_SAVED'), 'Raw OCR saved in project data');
+  const restored = await readWorksheetDocument(bytes);
+  assert(restored![0].annotations[0].text === 'My answer' && restored![0].text === '', 'Worksheet cannot reopen without OCR');
 });
 await wait(() => state.__SOURCES !== undefined);
 if (state.__SOURCES!.length) await test('real multi-image input converts in order and reaches OCR review export', async () => {
