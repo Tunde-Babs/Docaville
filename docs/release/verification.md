@@ -2,6 +2,8 @@
 
 Prepared 6 November 2026. This records completed preparation and explicit release blockers. It is not approval for all devices or a commercial store release.
 
+**Superseding finding, 7 November:** real image-to-Word worksheet testing failed content/layout fidelity. The historical passing checks below did not establish complex scanned-document conversion quality. Release is on hold; see [the new conversion findings](image-word-qa.md). Previous packaged artifacts do not contain the local conversion fixes.
+
 ## Completed checks
 
 | Check | Result |

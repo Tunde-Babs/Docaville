@@ -1,7 +1,7 @@
 {
   "name": "docaville",
   "productName": "Docaville",
-  "version": "1.1.0",
+  "version": "1.1.1-beta.1",
   "private": true,
   "description": "Local document editing, PDF tools, transcription, dictation, OCR, and translation",
   "main": "electron/main.cjs",
@@ -26,6 +26,7 @@
     "dist:win": "npm run build && electron-builder --publish never --win nsis --x64",
     "dist:linux": "npm run build && electron-builder --publish never --linux AppImage --x64",
     "test:release": "node --test tests/release.cjs",
+    "test:image-word": "electron tests/run-image-word.cjs",
     "notices": "node scripts/third-party-notices.mjs",
     "dist:mac:signed": "npm run build && npm run notices && electron-builder --publish never --config build/signed-mac.cjs --mac dmg zip --arm64 --x64",
     "build:free-preview": "cross-env VITE_RELEASE_CHANNEL=free-preview npm run build"

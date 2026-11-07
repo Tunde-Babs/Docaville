@@ -2,12 +2,14 @@
 import mammoth from 'mammoth';
 import {
   Document, Packer, Paragraph, TextRun, Bookmark, ExternalHyperlink, InternalHyperlink, HeadingLevel, AlignmentType, ImageRun, Table, TableRow, TableCell,
-  WidthType, LevelFormat, ShadingType, BorderStyle, PageBreak, Tab, TabStopType, LineRuleType, type ParagraphChild, type IParagraphOptions,
+  WidthType, LevelFormat, ShadingType, BorderStyle, PageBreak, Tab, TabStopType, LineRuleType, SectionType, PageOrientation, Textbox, type ParagraphChild, type IParagraphOptions,
 } from 'docx';
 import type { JSONContent } from '@tiptap/react';
-import { decodeImage, toEmbeddable } from '../lib/image';
+import { toEmbeddable } from '../lib/image';
 import type { OcrLayout } from './ocrLayout';
 import { resolvePara, type ParaAttrs, type PageGeom } from '../lib/paraFormat';
+import { fitWorksheetAnnotation, worksheetHeight, worksheetLines, type WorksheetAnnotation } from './worksheet';
+import { attachWorksheetProject, readWorksheetDocument, WORKSHEET_MARKER } from './worksheetDocument';
 
 export async function docxToHtml(bytes: Uint8Array): Promise<{ html: string; warnings: string[] }> {
   const res = await mammoth.convertToHtml(
@@ -192,6 +194,7 @@ export async function buildDocx(children: (Paragraph | Table)[], title = 'Docume
  * section/page setup (paper size, margins, columns, title-page headers) are carried over unchanged.
  */
 export async function jsonToDocx(json: JSONContent, title?: string, original?: { bytes: Uint8Array; defaults?: DocDefaults }) {
+  if (original?.bytes.length && await readWorksheetDocument(original.bytes)) throw new Error('Use the worksheet tools to save this document without losing positioned answers.');
   const fresh = await buildDocx(await new Converter().blocks(json.content), title, null, original?.defaults);
   if (!original?.bytes.length) return fresh;
   // Preservation failure must fail the save; silently writing a simplified file damages the original.
@@ -284,7 +287,7 @@ async function transplantSections(originalBytes: Uint8Array, freshBytes: Uint8Ar
 
 const ALIGN_L = { left: AlignmentType.LEFT, center: AlignmentType.CENTER, right: AlignmentType.RIGHT };
 
-/** Faithful paragraphs from an analysed page layout (colours, sizes, indents, spacing, alignment). */
+/** Best-effort text paragraphs; this does not reconstruct figures, tables or mixed columns. */
 export function layoutParagraphs(layout: OcrLayout, font = 'Arial'): Paragraph[] {
   return layout.paras.map((p) => new Paragraph({
     alignment: ALIGN_L[p.align],
@@ -298,33 +301,98 @@ export function layoutParagraphs(layout: OcrLayout, font = 'Arial'): Paragraph[]
   }));
 }
 
-type DocxImageItem = { bytes: Uint8Array; mime: string; layout?: OcrLayout; paragraphs?: { text: string; heightPx: number }[] };
+export type DocxImageItem = { bytes: Uint8Array; mime: string; layout?: OcrLayout; paragraphs?: { text: string; heightPx: number }[]; text?: string; sourceName?: string; annotations?: WorksheetAnnotation[] };
 
 /**
  * Images → .docx.
- *  - `layout`: editable text reproducing colours, sizes, indentation, blanks and page colour.
+ *  - `text`: reviewed OCR at a readable size, labeled by source page.
+ *  - `includeOriginals`: retain the source on a separate fitted image page before its text.
+ *  - `layout`: legacy approximate text styling; does not reproduce figures/tables.
  *  - `paragraphs`: plain text (used when the user hand-edited the OCR text).
  *  - neither: each image on its own page at full resolution.
  */
-export async function imagesToDocx(items: DocxImageItem[]) {
-  const children: Paragraph[] = [];
-  let background: string | null = null;
+export async function imagesToDocx(items: DocxImageItem[], options: { includeOriginals?: boolean } = {}) {
+  if (!items.length) throw new Error('Add at least one image before converting to Word.');
+  const hasAnswers = items.some(item => item.annotations?.some(note => note.kind === 'cross' || note.text.trim()));
+  if (hasAnswers && !options.includeOriginals && items.some(item => item.text !== undefined || item.layout || item.paragraphs)) throw new Error('Include the original pages to preserve your worksheet answers.');
+  const sections: ConstructorParameters<typeof Document>[0]['sections'][number][] = [];
+  const page = (landscape = false) => ({
+    size: { width: 11906, height: 16838, orientation: landscape ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT },
+    margin: { top: 560, bottom: 560, left: 560, right: 560, header: 0, footer: 0, gutter: 0 },
+  });
   for (let i = 0; i < items.length; i++) {
     const it = items[i];
-    if (i > 0) children.push(new Paragraph({ children: [new PageBreak()] }));
-    if (it.layout) {
-      background ??= it.layout.background;
-      children.push(...layoutParagraphs(it.layout));
-    } else if (it.paragraphs) {
-      const img = await decodeImage(it.bytes, it.mime);
-      const ptPerPx = 595.28 / img.naturalWidth;
-      for (const p of it.paragraphs)
-        children.push(new Paragraph({ children: [new TextRun({ text: p.text, font: 'Arial', size: Math.round(Math.min(48, Math.max(8, (p.heightPx / 0.95) * ptPerPx)) * 2) })] }));
-    } else {
-      children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [await imageRun(it.bytes, it.mime)] }));
+    const editable = it.text !== undefined || !!it.layout || !!it.paragraphs;
+    if (editable && !options.includeOriginals && it.annotations?.some(note => note.kind === 'cross' || note.text.trim())) throw new Error('Include the original pages to preserve your worksheet answers.');
+    if (!editable || options.includeOriginals) {
+      const image = await toEmbeddable(it.bytes, it.mime);
+      const landscape = image.width > image.height;
+      // Word's inline image must fit BOTH axes, including its paragraph's baseline space.
+      // A width-only cap made portrait scans taller than the page; separate break paragraphs
+      // then produced overflow/blank pages between sources.
+      const widthPx = ((landscape ? 16838 : 11906) - 1120) / 15;
+      const heightPx = ((landscape ? 11906 : 16838) - 1120 - 80) / 15;
+      const scale = Math.min(widthPx / image.width, heightPx / image.height);
+      const renderedWidth = Math.floor(image.width * scale), renderedHeight = Math.floor(image.height * scale);
+      const answers = (it.annotations ?? []).filter(note => note.kind === 'cross' || note.text.trim()).map(input => {
+        const note = fitWorksheetAnnotation(input, image.width / image.height);
+        const sizePt = note.size * renderedWidth * 0.75;
+        return new Textbox({ style: {
+          position: 'absolute', positionHorizontalRelative: 'page', positionVerticalRelative: 'page',
+          positionHorizontal: 'absolute', positionVertical: 'absolute', wrapStyle: 'none', zIndex: 10,
+          marginLeft: `${28 + (widthPx - renderedWidth) * 0.375 + note.x * renderedWidth * 0.75}pt`,
+          marginTop: `${28 + note.y * renderedHeight * 0.75}pt`,
+          width: `${note.width * renderedWidth * 0.75}pt`, height: `${worksheetHeight(note, image.width / image.height) * renderedHeight * 0.75 + 1}pt`,
+        }, children: worksheetLines(note).map(text => new Paragraph({
+          spacing: { before: 0, after: 0, line: Math.round(sizePt * 1.3 * 20), lineRule: LineRuleType.EXACT },
+          children: [new TextRun({ text, font: 'Arial', size: Math.round(sizePt * 2), color: note.color.slice(1) })],
+        })) });
+      });
+      sections.push({ properties: { type: SectionType.NEXT_PAGE, page: page(landscape) }, children: [new Paragraph({
+        alignment: AlignmentType.CENTER, spacing: { before: 0, after: 0, line: 20, lineRule: LineRuleType.AT_LEAST },
+        children: [new ImageRun({ type: image.type, data: image.bytes,
+          transformation: { width: renderedWidth, height: renderedHeight },
+          altText: { name: it.sourceName ?? `Source page ${i + 1}`, title: `Source page ${i + 1}`, description: 'Original image, including illustrations and handwriting. Text in this image is not editable.' },
+        }), ...answers],
+      })] });
+    }
+    if (editable) {
+      const children: Paragraph[] = [];
+      if (it.text !== undefined) {
+        children.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: `Recognized text — source page ${i + 1}`, bold: true, color: '000000', size: 28 })] }));
+        if (it.sourceName) children.push(new Paragraph({ children: [new TextRun({ text: it.sourceName, color: '000000' })] }));
+        children.push(new Paragraph({ children: [new TextRun({ text: 'Review against the original. OCR may misread handwriting, checkboxes and columns; tables and illustrations are not reconstructed.', italics: true, color: '000000' })] }));
+        for (const text of (it.text || 'No text was recognized on this page.').split(/\r?\n/)) children.push(new Paragraph({
+          spacing: { before: 0, after: 80 }, children: [new TextRun({ text, size: 22, color: '000000', font: 'Arial' })],
+        }));
+      } else if (it.layout) children.push(...layoutParagraphs(it.layout));
+      else for (const p of it.paragraphs ?? []) children.push(new Paragraph({ children: [new TextRun({ text: p.text, font: 'Arial', size: 22 })] }));
+      if (!children.length) children.push(new Paragraph({ children: [] }));
+      sections.push({ properties: { type: SectionType.NEXT_PAGE, page: page() }, children });
     }
   }
-  return buildDocx(children, 'Document', background);
+  const doc = new Document({ title: 'Converted images', creator: 'Docaville',
+    ...(hasAnswers ? { keywords: WORKSHEET_MARKER } : {}),
+    styles: { default: { document: { run: { font: 'Arial', size: 22, color: '000000' } } } },
+    sections,
+    ...(items.find(it => it.layout?.background)?.layout?.background ? { background: { color: items.find(it => it.layout?.background)!.layout!.background! } } : {}),
+  });
+  const bytes = new Uint8Array(await (await Packer.toBlob(doc)).arrayBuffer());
+  if (!items.some(item => item.annotations?.length)) return bytes;
+  // The library's generic VML textboxes use default fill, stroke and padding.
+  // Answers need transparent, borderless boxes with the same origin as the on-page editor.
+  const { default: JSZip } = await import('jszip');
+  const zip = await JSZip.loadAsync(bytes);
+  const xml = new DOMParser().parseFromString(await zip.file('word/document.xml')!.async('string'), 'text/xml');
+  for (const shape of [...xml.getElementsByTagNameNS('urn:schemas-microsoft-com:vml', 'shape')]) {
+    shape.setAttribute('filled', 'f'); shape.setAttribute('stroked', 'f');
+  }
+  for (const box of [...xml.getElementsByTagNameNS('urn:schemas-microsoft-com:vml', 'textbox')]) {
+    box.setAttribute('inset', '0,0,0,0'); box.setAttribute('style', 'mso-fit-shape-to-text:f;');
+  }
+  zip.file('word/document.xml', new XMLSerializer().serializeToString(xml));
+  if (hasAnswers) await attachWorksheetProject(zip, items.map(item => ({ sourceName: item.sourceName ?? 'Worksheet page', text: item.text ?? '', annotations: item.annotations ?? [] })));
+  return zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
 }
 
 /** PDF pages (each analysed into a layout) → .docx with page breaks. */

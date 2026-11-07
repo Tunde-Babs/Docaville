@@ -2,6 +2,8 @@
 
 This folder tracks the release candidate. A successful build is not device acceptance, security certification, signing, or store approval.
 
+**Release hold — 7 November 2026:** real multi-image worksheet testing exposed missing illustrations, failed editable layout reconstruction, OCR errors and pagination defects. Image fitting and a source-backed OCR review workflow have been corrected locally; faithful editable reconstruction remains unresolved. Earlier artifacts and CI evidence predate these fixes. Do not ship the previous candidate. See [image-to-Word findings and acceptance gates](image-word-qa.md).
+
 ## Sequence and status
 
 | Step | Status |
@@ -36,6 +38,7 @@ npm run test:release
 npm test
 npm run test:regressions
 npm run test:productivity
+npm run test:image-word
 npm run test:models
 npm run notices
 npm run desktop:package

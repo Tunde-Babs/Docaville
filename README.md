@@ -2,7 +2,9 @@
 
 Create, edit, convert, and review PDFs, Word documents, spreadsheets, presentations, and images. Turn speech and scans into editable documents with on-device transcription, dictation, OCR, and translation.
 
-**Release candidate: 1.1.0.** Application branding, package metadata, and new application identifiers now use Docaville. Existing desktop recovery data uses the legacy profile when present; internal storage keys remain compatible. This is a beta preparation build, pending the acceptance and signing checks in [the release checklist](docs/release/README.md).
+**Current testing version: 1.1.1-beta.1.** Editing and productivity tools are included without paid unlocks in this beta. Application branding, package metadata, and new application identifiers use Docaville. Existing desktop recovery data uses the legacy profile when present; internal storage keys remain compatible. Commercial release remains pending the acceptance and signing checks in [the release checklist](docs/release/README.md).
+
+**Release on hold (7 November 2026):** complex scanned worksheets failed editable image-to-Word fidelity. Image fitting and OCR review safeguards are corrected locally; faithful editable table/figure reconstruction remains unresolved. See [the conversion findings](docs/release/image-word-qa.md).
 
 No account or hosted document-processing backend is required. Cloud connections and team workspaces are deferred to a later build.
 
@@ -40,6 +42,7 @@ npm run test:release
 npm test
 npm run test:regressions
 npm run test:productivity
+npm run test:image-word
 # Includes real speech, source-answer, and translation models:
 npm run test:models
 ```
@@ -81,7 +84,7 @@ licenses/         # packaged third-party runtime notices
 - **PDF Cover and Edit text export a clean, flattened copy.** Pages are rebuilt from lossless 300 DPI renders with covered pixels removed; no original content streams, nested objects, attachments or metadata are copied. Uncovered text boxes receive a fresh searchable layer when their geometry/font is supported. Partially covered or unsupported text boxes remain visible as pixels. Forms and links are flattened, and the first Save suggests a separate `-covered.pdf` copy. The editor explains this before saving. Keep the original for editable forms and links.
 - **PDF saves without opaque covers preserve original objects when page order is unchanged (or trailing pages are removed).** Reassembling pages flattens existing forms. New text/image/highlight overlays do not require rasterizing the original pages.
 - **Images are embedded byte-for-byte.** PNG and JPEG go into PDF/DOCX without recompression. Other formats become lossless PNG.
-- **Image→Word keeps the look of the page.** OCR auto-detects the language and reads with that language's model first, so German umlauts are recognised. Small images are enlarged and contrast-boosted before OCR. Each word's text colour is sampled from the image, then grouped into a consistent page palette. Font sizes come from letter shapes, and indentation, alignment, spacing, fill-in blanks (`____`) and the page colour are carried over ([src/engines/ocrLayout.ts](src/engines/ocrLayout.ts)).
+- **Image → Word has two explicit outputs.** Preserve appearance embeds each source image on its own A4 page, fits both dimensions, and retains diagrams, tables and handwriting as pixels. Reviewed OCR displays each source beside editable recognized text before export; it includes the original before its text by default. OCR does not reconstruct editable tables or illustrations, and handwriting, checkboxes and column order may be wrong. Complex scanned worksheets remain a release blocker for faithful editable conversion; see [conversion QA](docs/release/image-word-qa.md).
 - **Exported PDFs are vector.** Text stays real text in documents, sheets and slides. Raster exports render at 300 DPI.
 - **Office preservation has explicit scope.** Excel retains supported styles, merges and formulas; structural row/column edits and sheet renames update A1 references across the workbook. VBA parts are retained in `.xlsm`, but macros never execute. PowerPoint edits are written into the original package to preserve existing masters and notes. Unsupported Office objects still require compatibility testing.
 
@@ -94,7 +97,7 @@ licenses/         # packaged third-party runtime notices
 | Spreadsheets | XLSX/XLSM/CSV/TSV, cell editing, supported formulas, formatting, number formats, merges, row/column operations, and sheet management. Export XLSX, CSV, and PDF. Macros never execute. |
 | Presentations | Edit supported PPTX text, shapes, and images; move/resize/arrange objects; add, duplicate, reorder, hide, or delete slides; adjust backgrounds. Export PPTX, PDF, and slide images. |
 | Images | Rotate, flip, crop, resize, adjust, undo/redo, OCR, and correct recognized text. Export PNG, JPEG, WebP, PDF, searchable PDF, Word, and plain text. HEIC/HEIF and multi-page TIFF decoding are included. |
-| Image conversion | Combine images into PDF or Word; select A4, US Letter, or image-sized PDF pages; create searchable PDFs or OCR-based editable Word documents with reconstructed colors/layout. |
+| Image conversion | Combine images into PDF or Word; select A4, US Letter, or image-sized PDF pages; preserve appearance in image-based Word pages or review/correct OCR text beside its sources. Add positioned text answers and crosses directly on a worksheet, move/delete them, undo/redo, and export them over the scan as Word text boxes. Reopen annotated Docaville exports in worksheet tools to continue editing. |
 
 ## Productivity tools
 

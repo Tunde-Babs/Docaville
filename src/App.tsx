@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { type OpenFile, readFile, newId, detectKind, type DocKind } from './lib/formats';
 import { StatusLayer, toast } from './components/ui';
 import type { NativeFile, WritableHandle } from './lib/fileio';
+import { isNativeMobile } from './lib/fileio';
 import { saveRegistry, flushPendingInputs } from './components/useSave';
 import Home from './components/Home';
 import { type ProductivityTool } from './components/ProductivityHub';
@@ -54,7 +55,7 @@ export default function App() {
 
   /** Add a document — or switch to it if that same file is already open. */
   const addFile = useCallback((of: OpenFile) => {
-    const dup = filesRef.current.find((f) => (f.path ? f.path === of.path : !!f.handle && f.handle === of.handle));
+    const dup = filesRef.current.find((f) => (f.path ? f.path === of.path : f.mobilePath ? f.mobilePath === of.mobilePath : !!f.handle && f.handle === of.handle));
     if (dup) { setActive(dup.id); toast(`${dup.name} is already open`); return; }
     filesRef.current = [...filesRef.current, of];
     setFiles((fs) => [...fs, of]);
@@ -206,7 +207,7 @@ export default function App() {
         <button className="tab plan-tab" onClick={upgrade}>{EDITION.label}</button>
       </nav>
       <main className="workspace">
-        {active === 'home' && <Home onOpen={open} onCreate={create} onTool={openTool} recoveryCount={recoveryCount} proAccess={EDITION.canEdit} onUpgrade={upgrade} />}
+        {active === 'home' && <Home onOpen={open} onOpenSaved={addFile} onCreate={create} onTool={openTool} recoveryCount={recoveryCount} proAccess={EDITION.canEdit} onUpgrade={upgrade} />}
         <Suspense fallback={<div className="loading">Loading editor…</div>}>
           {toolsOpened && <div className="editor-host" hidden={active !== 'tools'}>{EDITION.canEdit ? <ProductivityHub tool={tool} navigate={setTool} createDocument={createDocument} restore={restoreVersion} files={files} /> : <RecoveryTools files={files} restore={restoreVersion} />}</div>}
           {files.map((f) => {
@@ -215,6 +216,7 @@ export default function App() {
           })}
         </Suspense>
       </main>
+      {files.some(f => f.id === active) && isNativeMobile() && EDITION.canEdit && <p className="mobile-storage-notice">Save keeps a copy in Docaville. Find it under Home → Saved on this device to open or share it.</p>}
       {files.some(f => f.id === active) && <div className="recovery-status" role="status">{!EDITION.canEdit ? 'Read-only view · Original file unchanged' : recoveryStatus[active]?.error ? `Local recovery unavailable: ${recoveryStatus[active].error}. Save your file to preserve changes.` : recoveryStatus[active]?.at ? `Recovery checkpoint ${new Date(recoveryStatus[active].at!).toLocaleTimeString()}` : 'Changes are checkpointed locally after a short pause.'}<button onClick={() => openTool('recovery')}>Version history</button></div>}
       {showPro && <ProDialog beta={EDITION.canEdit} close={closePro} />}
       <StatusLayer />

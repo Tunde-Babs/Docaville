@@ -12,6 +12,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   verify:
+    env:
+      VITE_RELEASE_CHANNEL: beta
     strategy:
       fail-fast: false
       matrix:
@@ -40,10 +42,12 @@ jobs:
             xvfb-run -a npm test
             xvfb-run -a npm run test:regressions
             xvfb-run -a npm run test:productivity
+            xvfb-run -a npm run test:image-word
           else
             npm test
             npm run test:regressions
             npm run test:productivity
+            npm run test:image-word
           fi
   android:
     runs-on: ubuntu-latest

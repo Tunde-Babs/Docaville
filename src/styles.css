@@ -400,3 +400,23 @@ input.form-input[type=checkbox], input.form-input[type=radio] { accent-color: va
 .viewer-page-text { margin: 8px 16px; }
 .viewer-page-text pre { white-space: pre-wrap; max-height: 200px; overflow: auto; font: inherit; }
 .viewer-fallback-text { white-space: pre-wrap; font: inherit; line-height: 1.6; background: #fff; padding: 20px; color: #111827; }
+/* Conversion review stays within a phone viewport and uses the native modal focus trap. */
+.image-word-review { width: min(1160px, 94vw); max-height: 90dvh; overflow: auto; border: 1px solid var(--line); border-radius: 12px; padding: 24px; background: var(--panel); color: var(--ink); }
+.image-word-review::backdrop { background: #0009; }
+.image-word-review-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 16px 0; }
+.image-word-review-columns img { display: block; width: 100%; height: auto; }
+.image-word-review-columns label { display: flex; flex-direction: column; min-width: 0; }
+.image-word-review-columns textarea { flex: 1; width: 100%; min-height: 420px; padding: 12px; line-height: 1.5; resize: vertical; }
+@media (max-width: 700px) { .image-word-review { padding: 16px; } .image-word-review-columns { grid-template-columns: 1fr; } }
+.worksheet-tools { margin: 8px 0; }
+.worksheet-surface { position: relative; line-height: 0; }
+.worksheet-surface > img { display: block; width: 100%; height: auto; user-select: none; }
+.worksheet-tool-text { cursor: text; }
+.worksheet-tool-cross { cursor: crosshair; }
+.worksheet-answer { position: absolute; line-height: 1.3; font-family: Arial, sans-serif; }
+.worksheet-answer.selected { outline: 1px dashed var(--accent); }
+.worksheet-answer textarea { display: block; width: 100%; height: 100%; min-height: 0; padding: 0; border: 0; border-radius: 0; margin: 0; resize: none; overflow: hidden; background: transparent; color: inherit; font: inherit; line-height: 1.3; outline: none; box-shadow: none; }
+.worksheet-answer textarea::placeholder { color: currentColor; opacity: .65; }
+.worksheet-answer .worksheet-cross { display: block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; color: inherit; background: transparent; font: inherit; line-height: 1.3; text-align: left; }
+.worksheet-move { position: absolute; top: -24px; left: 0; height: 24px; min-width: 28px; padding: 0 4px; border: 1px solid var(--accent); background: var(--panel); color: var(--ink); cursor: move; touch-action: none; line-height: 20px; font-size: 16px; }
+.mobile-storage-notice { margin: 0; padding: 8px 16px; background: var(--accent-soft); color: var(--ink); font-size: 13px; }

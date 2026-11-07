@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import type { WordReviewPage } from '../components/ImageWordReview';
+import { readWorksheetDocument, type SavedWorksheetPage } from '../engines/worksheetDocument';
 import { useEditor, EditorContent, Extension, type Editor } from '@tiptap/react';
 import FontFamily from '@tiptap/extension-font-family';
 import StarterKit from '@tiptap/starter-kit';
@@ -113,6 +115,7 @@ function docColours(json: unknown) {
 }
 
 interface Loaded { html: string; defaults?: DocDefaults; header?: string; footer?: string }
+const ImageWordReview = lazy(() => import('../components/ImageWordReview'));
 
 
 export const documentExtensions = [
@@ -134,7 +137,38 @@ async function loadContent(file: OpenFile): Promise<Loaded> {
   throw new Error(`.${ext} files need the server conversion add-on (see README → "Legacy formats"). Save as .docx and reopen.`);
 }
 
-export default function DocEditor({ file, onChange, onFail }: EditorProps) {
+/** Keep positioned worksheet answers out of the general rich-text importer. */
+export default function DocEditor(props: EditorProps) {
+  const [worksheet, setWorksheet] = useState<SavedWorksheetPage[] | null | undefined>(undefined);
+  const [error, setError] = useState('');
+  const [open, setOpen] = useState(true);
+  useEffect(() => {
+    let stopped = false;
+    setError(''); setWorksheet(undefined); setOpen(true);
+    (async () => {
+      const result = props.file.bytes && /\.docx$/i.test(props.file.name) ? await readWorksheetDocument(props.file.bytes) : null;
+      if (!stopped) setWorksheet(result);
+    })().catch(failure => { if (!stopped) setError((failure as Error).message); });
+    return () => { stopped = true; };
+    // A normal save updates file.bytes while the rich editor may contain newer edits.
+    // Route once per opened tab; never remount that editor merely because a save finished.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.file.id]);
+  if (error) return <div className="panel" role="alert">{error} The file has not been changed.</div>;
+  if (worksheet === undefined) return <p>Opening document…</p>;
+  if (!worksheet) return <RichDocEditor {...props} />;
+  const pages: WordReviewPage[] = worksheet.map(page => ({ ...page, savedWorksheet: true, ocr: { text: page.text, lines: [], width: 0, height: 0 } }));
+  return <div className="panel"><h2>Worksheet</h2><p>Your original pages, positioned answers, crosses and reviewed text are saved in this Word document. Open the worksheet tools to continue editing, then export a Word copy.</p>
+    <button className="btn primary" onClick={() => setOpen(true)}>Edit worksheet</button>
+    {open && <Suspense fallback={<p>Opening worksheet tools…</p>}><ImageWordReview pages={pages} name={props.file.name} close={() => setOpen(false)}
+      onSaved={(bytes, target) => {
+        props.onChange({ bytes, name: target.name, path: target.path, handle: target.handle, mobilePath: target.mobilePath, dirty: false });
+        void readWorksheetDocument(bytes).then(setWorksheet).catch(failure => setError((failure as Error).message));
+      }} /></Suspense>}
+  </div>;
+}
+
+function RichDocEditor({ file, onChange, onFail }: EditorProps) {
   const editor = useEditor({ extensions: documentExtensions, content: '' });
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   // The original .docx (if any) donates its headers, footers and page setup on save.

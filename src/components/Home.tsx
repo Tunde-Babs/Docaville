@@ -1,24 +1,28 @@
-import { useState } from 'react';
-import { ACCEPT, type DocKind } from '../lib/formats';
+import { lazy, Suspense, useState } from 'react';
+import { ACCEPT, type DocKind, type OpenFile } from '../lib/formats';
 import { FilePick, run, setBusy, toast } from './ui';
-import { saveFile } from '../lib/fileio';
+import { saveFile, isNativeMobile } from '../lib/fileio';
 import { normalizeImage, decodeImage, imageToCanvas } from '../lib/image';
 import { OCR_LANGS } from '../lib/langs';
 import { TEMPLATES, type Template } from '../lib/templates';
 import { PRODUCTIVITY_TOOLS, type ProductivityTool } from './ProductivityHub';
 import AppInfo from './AppInfo';
+import type { WordReviewPage } from './ImageWordReview';
+const MobileDocuments = lazy(() => import('./MobileDocuments'));
+const ImageWordReview = lazy(() => import('./ImageWordReview'));
 
 const GROUPS: [DocKind, string][] = [['doc', 'Word'], ['sheet', 'Excel'], ['slides', 'PowerPoint'], ['pdf', 'PDF']];
 
-interface Props { onOpen: (f: File[]) => void; onCreate: (kind: DocKind, name: string, bytes?: Uint8Array | null, template?: string) => void; onTool: (tool: ProductivityTool) => void; recoveryCount: number; proAccess: boolean; onUpgrade: () => void }
+interface Props { onOpen: (f: File[]) => void; onOpenSaved: (file: OpenFile) => void; onCreate: (kind: DocKind, name: string, bytes?: Uint8Array | null, template?: string) => void; onTool: (tool: ProductivityTool) => void; recoveryCount: number; proAccess: boolean; onUpgrade: () => void }
 
 type Target = 'pdf' | 'pdf-ocr' | 'docx-images' | 'docx-ocr';
 
-export default function Home({ onOpen, onCreate, onTool, recoveryCount, proAccess, onUpgrade }: Props) {
+export default function Home({ onOpen, onOpenSaved, onCreate, onTool, recoveryCount, proAccess, onUpgrade }: Props) {
   const [images, setImages] = useState<File[]>([]);
   const [target, setTarget] = useState<Target>('pdf');
   const [pageSize, setPageSize] = useState<'fit' | 'a4' | 'letter'>('a4');
   const [lang, setLang] = useState('auto');
+  const [wordReview, setWordReview] = useState<{ pages: WordReviewPage[]; name: string } | null>(null);
 
   async function createFrom(t: Template) {
     if (!proAccess) { onUpgrade(); return; }
@@ -31,7 +35,13 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount, proAcces
   async function convert() {
     if (!proAccess) { onUpgrade(); return; }
     await run('Converting…', async () => {
-      const imgs = (await Promise.all(images.map(async (f) => normalizeImage(new Uint8Array(await f.arrayBuffer()), f.type)))).flat();
+      const imgs: { bytes: Uint8Array; mime: string; sourceName: string }[] = [];
+      // Decode one source at a time. Keep multi-page TIFF/HEIC frames next to their source
+      // and avoid decoding an entire batch concurrently on memory-constrained devices.
+      for (const file of images) {
+        const frames = await normalizeImage(new Uint8Array(await file.arrayBuffer()), file.type);
+        frames.forEach((frame, i) => imgs.push({ ...frame, sourceName: frames.length > 1 ? `${file.name} — frame ${i + 1}` : file.name }));
+      }
       if (target === 'pdf' || target === 'pdf-ocr') {
         const { imagesToPdf } = await import('../engines/pdf');
         const pdf = await imagesToPdf(imgs, { pageSize, dpi: 300, margin: pageSize === 'fit' ? 0 : 28 });
@@ -44,17 +54,18 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount, proAcces
         await saveFile(images.length === 1 ? images[0].name.replace(/\.[^.]+$/, '.pdf') : 'Converted.pdf', bytes);
       } else {
         const { imagesToDocx } = await import('../engines/docx');
-        const items = [];
+        const pages: WordReviewPage[] = [];
         for (const [i, im] of imgs.entries()) {
           if (target === 'docx-ocr') {
             const { ocrCanvas } = await import('../engines/ocr');
-            const { analyzeLayout } = await import('../engines/ocrLayout');
             const canvas = imageToCanvas(await decodeImage(im.bytes, im.mime));
             const res = await ocrCanvas(canvas, lang, (p, s) => setBusy(`Image ${i + 1}/${imgs.length}: ${s} ${Math.round(p * 100)}%`));
-            items.push({ ...im, layout: analyzeLayout(res, canvas) });
-          } else items.push(im);
+            pages.push({ ...im, ocr: res, text: res.text });
+          }
         }
-        await saveFile(images.length === 1 ? images[0].name.replace(/\.[^.]+$/, '.docx') : 'Converted.docx', await imagesToDocx(items));
+        const name = images.length === 1 ? images[0].name.replace(/\.[^.]+$/, '.docx') : 'Converted.docx';
+        if (target === 'docx-ocr') { setWordReview({ pages, name }); return; }
+        await saveFile(name, await imagesToDocx(imgs));
       }
       toast('Conversion complete');
     });
@@ -75,6 +86,7 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount, proAcces
 
   return (
     <div className="home-page">
+      {wordReview && <Suspense fallback={<p>Opening conversion review…</p>}><ImageWordReview {...wordReview} close={() => setWordReview(null)} /></Suspense>}
       <section className="hero">
         <img className="hero-logo" src="./logo.svg" alt="" width={84} height={84} />
         <div className="hero-text">
@@ -92,6 +104,7 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount, proAcces
       </section>
 
       {!proAccess && <p className="panel">Viewing is free. Pro unlocks editing, creation, conversion, and productivity tools. Previously saved recovery data remains accessible.</p>}
+      {isNativeMobile() && <Suspense fallback={<p>Opening saved copies…</p>}><MobileDocuments onOpen={onOpenSaved} /></Suspense>}
 
       <section><h2>Work smarter</h2>{recoveryCount > 0 && <button className="recovery-banner" onClick={() => onTool('recovery')}>{recoveryCount} local recovery draft{recoveryCount === 1 ? '' : 's'} available — review and restore</button>}<div className="cards">{PRODUCTIVITY_TOOLS.map(([id, icon, label, description]) => <button key={id} className="card" onClick={() => onTool(id)}><span className="card-icon">{icon}</span>{label}<small>{description}</small></button>)}</div></section>
 
@@ -135,8 +148,8 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount, proAcces
             <select value={target} onChange={(e) => setTarget(e.target.value as Target)}>
               <option value="pdf">PDF (exact image quality)</option>
               <option value="pdf-ocr">Searchable PDF (image + OCR text layer)</option>
-              <option value="docx-images">Word .docx (images)</option>
-              <option value="docx-ocr">Word .docx (editable text, keeps colours &amp; layout)</option>
+              <option value="docx-images">Word .docx (preserve appearance as images)</option>
+              <option value="docx-ocr">Word .docx (review editable OCR text + originals)</option>
             </select>
           </label>
           {target.startsWith('pdf') && (
@@ -157,6 +170,8 @@ export default function Home({ onOpen, onCreate, onTool, recoveryCount, proAcces
           )}
           <button className="btn primary" disabled={!images.length} onClick={convert}>Convert{!proAccess && ' · Pro'}</button>
         </div>
+        {target === 'docx-images' && <p className="muted">Preserves diagrams, tables and handwriting as images, one source page per Word page. Text inside the images is not editable.</p>}
+        {target === 'docx-ocr' && <p className="muted">Review and correct recognized text beside each source before exporting. Original images are included by default. OCR does not reconstruct editable tables or illustrations and may misread handwriting and columns.</p>}
       </section>
 
       <section className="panel">

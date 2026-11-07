@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import type { WordReviewPage } from '../components/ImageWordReview';
 import { normalizeImage, decodeImage, imageToCanvas, canvasToBytes, sampleBackground, sampleInk, rgbCss } from '../lib/image';
 import { renderEdited, DEFAULT_ADJUST, DEFAULT_TRANSFORM, SCAN_PRESET, type Adjust, type Transform } from '../engines/imageEdit';
 import type { OcrResult, OcrWord } from '../engines/ocr';
@@ -6,6 +7,7 @@ import { OCR_LANGS } from '../lib/langs';
 import { saveFile, baseName } from '../lib/fileio';
 import { Btn, Menu, Toolbar, Sep, run, setBusy, toast } from '../components/ui';
 import { useSave, loadOrFail, type EditorProps } from '../components/useSave';
+const ImageWordReview = lazy(() => import('../components/ImageWordReview'));
 
 
 const cloneCanvas = (c: HTMLCanvasElement) => { const n = document.createElement('canvas'); n.width = c.width; n.height = c.height; n.getContext('2d')!.drawImage(c, 0, 0); return n; };
@@ -18,6 +20,7 @@ export default function ImageEditor({ file, onChange, onFail }: EditorProps) {
   const [adjust, setAdjustState] = useState<Adjust>(DEFAULT_ADJUST);
   const [ocr, setOcr] = useState<OcrResult | null>(null);
   const [text, setText] = useState('');
+  const [wordReview, setWordReview] = useState<WordReviewPage[] | null>(null);
   const [lang, setLang] = useState('auto');
   const [cropMode, setCropMode] = useState(false);
   const [crop, setCrop] = useState<{ x0: number; y0: number; x1: number; y1: number } | null>(null);
@@ -149,6 +152,7 @@ export default function ImageEditor({ file, onChange, onFail }: EditorProps) {
 
   return (
     <div className="editor" ref={root}>
+      {wordReview && <Suspense fallback={<p>Opening conversion review…</p>}><ImageWordReview pages={wordReview} name={`${name}.docx`} close={() => setWordReview(null)} /></Suspense>}
       <Toolbar>
         <Btn primary onClick={() => save()} title="Save (Ctrl/Cmd+S)">💾 Save</Btn>
         <Btn onClick={print} title="Print (Ctrl/Cmd+P)">🖨 Print</Btn>
@@ -170,20 +174,11 @@ export default function ImageEditor({ file, onChange, onFail }: EditorProps) {
             await addTextLayer(pdf.doc, pdf.pages[0].page, o, pdf.pages[0].box);
             await saveFile(`${name}.pdf`, await pdf.doc.save());
           }),
-          exp('Word .docx (editable text, colours & layout)', async () => {
-            const { imagesToDocx } = await import('../engines/docx');
-            const { ocr: o } = await ensureOcr();
-            const { analyzeLayout } = await import('../engines/ocrLayout');
-            const out = output();
-            const bytes = await canvasToBytes(out);
-            // Hand-edited text panel → plain paragraphs; otherwise full colour/layout reconstruction
-            const edited = text.trim() && text !== o.text;
-            const item = edited
-              ? { bytes, mime: 'image/png', paragraphs: text.split('\n').map((t) => ({ text: t, heightPx: (o.lines[0]?.y1 ?? 20) - (o.lines[0]?.y0 ?? 0) })) }
-              : { bytes, mime: 'image/png', layout: analyzeLayout(o, base) };
-            await saveFile(`${name}.docx`, await imagesToDocx([item]));
+          exp('Word .docx (review OCR text + original)', async () => {
+            const result = await ensureOcr();
+            setWordReview([{ bytes: await canvasToBytes(output()), mime: 'image/png', sourceName: file.name, ocr: result.ocr, text: result.text }]);
           }),
-          exp('Word .docx (image)', async () => {
+          exp('Word .docx (preserve appearance as image)', async () => {
             const { imagesToDocx } = await import('../engines/docx');
             await saveFile(`${name}.docx`, await imagesToDocx([{ bytes: await canvasToBytes(output()), mime: 'image/png' }]));
           }),

@@ -31,6 +31,26 @@ test('free preview has no editing access and beta access is explicitly labelled'
   assert.equal(releaseEdition('beta').canEdit, true);
   assert.match(releaseEdition('beta').label, /Beta/);
 });
+test('new mobile copies avoid case-insensitive collisions and respect UTF-8 filename limits', async () => {
+  const { unusedMobileTarget } = await import('../src/lib/mobileFiles.ts');
+  assert.equal(unusedMobileTarget('Report.docx', ['report.docx', 'Report (2).docx']).path, 'documents/Report (3).docx');
+  const target = unusedMobileTarget('Ü'.repeat(200) + '.docx', []);
+  assert.ok(new TextEncoder().encode(target.path.split('/').pop()).length <= 240);
+  assert.ok(target.path.endsWith('.docx'));
+});
+test('mobile library paths reject traversal and binary reads retain all byte values', async () => {
+  const { mobileDocumentPath, decodeMobileData } = await import('../src/lib/mobileFiles.ts');
+  for (const value of ['../secret', '/file', 'a/b', 'a\\b', 'file\0name', '..', ' name ']) assert.throws(() => mobileDocumentPath(value));
+  const data = new Uint8Array([0, 1, 128, 255]);
+  assert.deepEqual(await decodeMobileData('AAGA/w=='), data);
+  assert.deepEqual(await decodeMobileData(new Blob([data])), data);
+});
+test('missing mobile directory is distinct from permission and other filesystem errors', async () => {
+  const { missingMobileFile } = await import('../src/lib/mobileFiles.ts');
+  assert.equal(missingMobileFile({ code: 'ENOENT' }), true);
+  assert.equal(missingMobileFile(new Error('Directory does not exist.')), true);
+  assert.equal(missingMobileFile({ code: 'EACCES', message: 'Access denied' }), false);
+});
 test('unconfigured commercial channel cannot masquerade as verified Pro access', async () => {
   const { releaseEdition } = await import('../src/lib/edition.ts');
   for (const channel of ['store', 'production', 'pro', 'paid', 'unexpected']) assert.throws(() => releaseEdition(channel), /Store release is not configured/);
